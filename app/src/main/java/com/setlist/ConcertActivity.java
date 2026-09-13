@@ -192,6 +192,11 @@ public final class ConcertActivity extends AppCompatActivity {
         for (int i = 0; i < names.length; i++) names[i] = String.format(Locale.US, "%02d  %s%s", i + 1, entries.get(i).song().title(), i == songIndex ? "  ·  Playing" : "");
         new MaterialAlertDialogBuilder(this).setTitle(((SetlistApp) getApplication()).library.setName(setId))
             .setSingleChoiceItems(names, songIndex, (dialog, index) -> { dialog.dismiss(); if (index != songIndex) goSong(index); })
+            .setNegativeButton("Home", (dialog, which) -> {
+                audio.stop();
+                startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                finish();
+            })
             .setPositiveButton("Back to score", null).setNeutralButton("Edit setlist", (dialog, which) -> finish()).show();
     }
     private void finishSet() {

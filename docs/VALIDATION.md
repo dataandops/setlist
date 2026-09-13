@@ -80,3 +80,5 @@ It is packaged only in the test APK.
 
 GitHub CI builds the APK, compiles instrumentation tests and runs lint. Emulator
 instrumentation was executed locally; it is not yet part of the hosted CI job.
+
+Follow-up validation: the direct score-menu Home route passed on both emulators. Pagination and combined search/filter recovery tests also passed on both (six focused checks across the two runs), including 31-song page boundaries, page restoration after recreation and reset after query/filter changes. Debug build and lint pass.

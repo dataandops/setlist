@@ -87,6 +87,16 @@ public class ConcertFlowTest {
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX() + 10, bounds.centerY(), 10);
         device.waitForIdle(); waitFor(By.desc("First song, page 1 of 3"));
     }
+    @Test public void scoreMenuReturnsDirectlyHome() {
+        scenario = ActivityScenario.launch(MainActivity.class);
+        waitFor(By.desc("Open setlist Flow test set")).click(); click("Start setlist");
+        waitFor(By.desc("First song, page 1 of 3")); click("Play MP3"); waitFor(By.text("Pause"));
+        click("Setlist"); click("Home");
+        waitFor(By.text("Your next great set.")); waitFor(By.desc("Open setlist Flow test set"));
+        assertFalse(device.hasObject(By.desc("First song, page 1 of 3")));
+        waitFor(By.desc("Open setlist Flow test set")).click(); click("Start setlist");
+        waitFor(By.desc("First song, page 1 of 3")); waitFor(By.text("Play MP3"));
+    }
     @Test public void setlistPickerJumpsAndRecreationKeepsPage() {
         openReader(); click("Setlist"); waitFor(By.textContains("02  Second song")).click();
         waitFor(By.desc("Second song, page 1 of 2")); click("Next page"); waitFor(By.desc("Second song, page 2 of 2"));
@@ -135,6 +145,29 @@ public class ConcertFlowTest {
         waitFor(By.textContains("Cannot open this score"));
         assertFalse(device.hasObject(By.desc("First song, page 1 of 3")));
         waitFor(By.desc("Skip to next song: Second song")).click(); waitFor(By.desc("Second song, page 1 of 2"));
+    }
+    @Test public void savedSongsPaginationResetsForSearchAndSetlistFilter() {
+        String source = library.createSet("Paged source");
+        for (int i = 1; i <= 31; i++) {
+            String id = "paged-" + i;
+            library.getWritableDatabase().execSQL("INSERT INTO songs (id,title,pdf,pages) VALUES (?,?,?,1)",
+                new Object[]{id, String.format(java.util.Locale.US, "Paged song %02d", i), Uri.fromFile(first).toString()});
+            library.addSong(source, id);
+        }
+        scenario = ActivityScenario.launch(new Intent(app, SongLibraryActivity.class).putExtra("set", set).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        click("All setlists"); click("Paged source");
+        waitFor(By.text("1–25 of 31 songs")); waitFor(By.text("Page 1 of 2"));
+        assertFalse(waitFor(By.desc("Previous results page")).isEnabled());
+        waitFor(By.desc("Next results page")).click(); waitFor(By.text("26–31 of 31 songs"));
+        waitFor(By.desc("Add Paged song 26")); assertFalse(waitFor(By.desc("Next results page")).isEnabled());
+        scenario.recreate(); waitFor(By.text("Page 2 of 2")); waitFor(By.desc("Add Paged song 26"));
+        waitFor(By.clazz(android.widget.EditText.class)).setText("Paged song 01");
+        waitFor(By.text("1–1 of 1 songs")); waitFor(By.text("Page 1 of 1"));
+        waitFor(By.clazz(android.widget.EditText.class)).setText("");
+        waitFor(By.desc("Next results page")).click(); waitFor(By.text("Page 2 of 2"));
+        click("Paged source"); click("Flow test set");
+        waitFor(By.text("Page 1 of 1")); waitFor(By.text("1–2 of 2 songs"));
+        waitFor(By.desc("Add First song")).click(); assertEquals(3, library.entries(set).size());
     }
     @Test public void savedSongsSearchFilterAndEmptyRecovery() {
         String song = library.entries(set).get(0).song().id();

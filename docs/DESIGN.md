@@ -43,3 +43,5 @@ The debug-only `DesignSystemActivity` displays the actual shared components. Lau
 [Tablet editor](screenshots/tablet-editor.png) · [Landscape reader](screenshots/tablet-reader.png) · [Portrait reader](screenshots/tablet-reader-portrait.png)
 
 Swipe left on the score to advance a page; swipe right to go back. At a song boundary, swiping continues to the adjacent song. The last page opens the set-complete dialog. Taps, short movements and vertical drags do not turn pages. Buttons remain available.
+
+Saved-song results show 25 songs per page, with Previous/Next controls, a result range and a page count. Search and setlist-filter changes return to page one; rotation preserves the selected page.
