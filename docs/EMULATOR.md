@@ -59,3 +59,5 @@ system-images;android-35;google_apis;arm64-v8a
 Use `avdmanager create avd -n Setlist_Tablet -k 'system-images;android-35;google_apis;arm64-v8a' -d pixel_tablet`.
 The helper script expects project-local tooling unless you override its environment
 variables. Plain Gradle commands also work with a standard Android Studio setup.
+
+Debug builds install as **Setlist Preview** (`com.setlist.debug`), alongside the signed release. Swipe left/right on the score to advance/go back. In landscape, page controls move beside the score. In Saved songs, search name or metadata and choose a source setlist. Use **Edit metadata** in a song’s options for artist, key, BPM and notes.

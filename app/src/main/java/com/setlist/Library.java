@@ -20,18 +20,20 @@ public final class Library extends SQLiteOpenHelper {
 
     public Library(Context context) { this(context, "setlist.db", "scores"); }
     Library(Context context, String database, String directory) {
-        super(context, database, null, 1);
+        super(context, database, null, 2);
         this.context = context.getApplicationContext();
     }
     @Override public void onConfigure(SQLiteDatabase db) { db.setForeignKeyConstraintsEnabled(true); }
     @Override public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE setlists (id TEXT PRIMARY KEY, name TEXT NOT NULL)");
-        db.execSQL("CREATE TABLE songs (id TEXT PRIMARY KEY, title TEXT NOT NULL, pdf TEXT NOT NULL, audio TEXT, pages INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE songs (id TEXT PRIMARY KEY, title TEXT NOT NULL, pdf TEXT NOT NULL, audio TEXT, pages INTEGER NOT NULL, artist TEXT NOT NULL DEFAULT '', musical_key TEXT NOT NULL DEFAULT '', bpm TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '')");
         db.execSQL("CREATE TABLE entries (id TEXT PRIMARY KEY, setlist_id TEXT NOT NULL REFERENCES setlists(id) ON DELETE CASCADE, song_id TEXT NOT NULL REFERENCES songs(id), position INTEGER NOT NULL)");
         db.execSQL("CREATE INDEX entry_order ON entries(setlist_id, position)");
     }
     @Override public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        throw new IllegalStateException("No migration from " + oldVersion + " to " + newVersion);
+        if (oldVersion == 1 && newVersion == 2) {
+            for (String column : new String[]{"artist", "musical_key", "bpm", "notes"}) db.execSQL("ALTER TABLE songs ADD COLUMN " + column + " TEXT NOT NULL DEFAULT ''");
+        } else throw new IllegalStateException("No migration from " + oldVersion + " to " + newVersion);
     }
     private static String id() { return UUID.randomUUID().toString(); }
     private static String name(String value) {
@@ -63,17 +65,45 @@ public final class Library extends SQLiteOpenHelper {
     }
     public List<Models.Entry> entries(String setId) {
         List<Models.Entry> result = new ArrayList<>();
-        try (Cursor c = getReadableDatabase().rawQuery("SELECT e.id,s.id,s.title,s.pdf,s.audio,s.pages FROM entries e JOIN songs s ON e.song_id=s.id WHERE e.setlist_id=? ORDER BY e.position,e.rowid", new String[]{setId})) {
-            while (c.moveToNext()) result.add(new Models.Entry(c.getString(0), new Models.Song(c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getInt(5))));
+        try (Cursor c = getReadableDatabase().rawQuery("SELECT e.id,s.id,s.title,s.pdf,s.audio,s.pages,s.artist,s.musical_key,s.bpm,s.notes FROM entries e JOIN songs s ON e.song_id=s.id WHERE e.setlist_id=? ORDER BY e.position,e.rowid", new String[]{setId})) {
+            while (c.moveToNext()) result.add(new Models.Entry(c.getString(0), readSong(c, 1)));
         }
         return result;
     }
     public List<Models.Song> songs() {
         List<Models.Song> result = new ArrayList<>();
-        try (Cursor c = getReadableDatabase().rawQuery("SELECT id,title,pdf,audio,pages FROM songs ORDER BY title COLLATE NOCASE", null)) {
-            while (c.moveToNext()) result.add(new Models.Song(c.getString(0), c.getString(1), c.getString(2), c.getString(3), c.getInt(4)));
+        try (Cursor c = getReadableDatabase().rawQuery("SELECT id,title,pdf,audio,pages,artist,musical_key,bpm,notes FROM songs ORDER BY title COLLATE NOCASE", null)) {
+            while (c.moveToNext()) result.add(readSong(c, 0));
         }
         return result;
+    }
+    private static Models.Song readSong(Cursor c, int offset) {
+        return new Models.Song(c.getString(offset), c.getString(offset + 1), c.getString(offset + 2), c.getString(offset + 3), c.getInt(offset + 4), c.getString(offset + 5), c.getString(offset + 6), c.getString(offset + 7), c.getString(offset + 8));
+    }
+    public List<Models.Song> searchSongs(String sourceSet, String query) {
+        java.util.Set<String> allowed = new java.util.HashSet<>();
+        if (sourceSet != null) for (Models.Entry entry : entries(sourceSet)) allowed.add(entry.song().id());
+        String[] words = normalized(query).split("\\s+"); List<Models.Song> result = new ArrayList<>();
+        for (Models.Song song : songs()) {
+            if (sourceSet != null && !allowed.contains(song.id())) continue;
+            String haystack = normalized(song.title() + " " + song.artist() + " " + song.key() + " " + song.bpm() + " bpm " + song.notes() + " " + song.id() + " " + Uri.decode(song.pdf()) + " " + (song.audio() == null ? "" : Uri.decode(song.audio())));
+            boolean matches = true;
+            for (String word : words) if (!haystack.contains(word)) { matches = false; break; }
+            if (matches) result.add(song);
+        }
+        return result;
+    }
+    private static String normalized(String text) {
+        return java.text.Normalizer.normalize(text.trim(), java.text.Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase(java.util.Locale.ROOT);
+    }
+    public void updateMetadata(String songId, String artist, String key, String bpm, String notes) {
+        String tempo = bpm.trim();
+        if (!tempo.isEmpty()) {
+            try { if (Integer.parseInt(tempo) <= 0) throw new NumberFormatException(); }
+            catch (NumberFormatException e) { throw new IllegalArgumentException("Enter a positive whole number for BPM, or leave it empty."); }
+        }
+        ContentValues values = new ContentValues(); values.put("artist", artist.trim()); values.put("musical_key", key.trim()); values.put("bpm", tempo); values.put("notes", notes.trim());
+        getWritableDatabase().update("songs", values, "id=?", new String[]{songId});
     }
     public void addSong(String setId, String songId) {
         SQLiteDatabase db = getWritableDatabase();

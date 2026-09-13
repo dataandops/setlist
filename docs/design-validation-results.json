@@ -1,0 +1,14 @@
+{
+  "TEST-Setlist_Phone(AVD) - 15-_app-.xml": {
+    "tests": "21",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "TEST-Setlist_Tablet(AVD) - 15-_app-.xml": {
+    "tests": "21",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  }
+}

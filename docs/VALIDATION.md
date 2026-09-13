@@ -1,10 +1,14 @@
 # Validation — 2026-09-13
 
 `assembleDebug`, `lintDebug`, and `connectedDebugAndroidTest` pass. The complete
-16-test suite passed on both Android 15 ARM64 emulators: Pixel Tablet and Pixel 7,
-for 32 successful checks. Both debug and release build/lint pass. The signed release APK installs on both emulators.
+21-test suite passed on both Android 15 ARM64 emulators: Pixel Tablet and Pixel 7,
+for 42 successful checks for the Material design and swipe update. The earlier reader release also passed release build/lint and signed installation; this update has been verified as a debug preview.
 
 ## Automated coverage
+
+- Horizontal swipes advance/reverse pages across song boundaries in both orientations; taps, short movements and vertical drags do not turn pages.
+- Metadata search combines fields and source-setlist filters; empty search recovery works.
+- Schema version 1 upgrades preserve song IDs, file links and ordering.
 
 - SQLite references survive database reopening; deleting a set preserves source files.
 - Reorder/removal and duplicate song entries keep stable identities and ordering.
@@ -25,7 +29,7 @@ for 32 successful checks. Both debug and release build/lint pass. The signed rel
 
 ## Page performance
 
-Measurements below come from the final full run, with both emulators running.
+Measurements below are from the earlier reader baseline, with both emulators running.
 Draw timing is from a visible page request to the ImageView's next `onDraw`, not
 physical display latency. Generated vector-score fixtures contain repeated music
 marks; no personal scores or scanned PDFs were supplied.

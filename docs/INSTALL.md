@@ -34,3 +34,5 @@ to read them and does not make permanent copies. If you move a PDF, use the song
 For future updates, install the new APK over this one to keep your saved setlists.
 Uninstalling the app removes its saved setlists and file links; original music
 files remain on your device.
+
+Swipe left on the score to advance a page; swipe right to go back. At a song boundary, swiping continues to the adjacent song. The last page opens the set-complete dialog. Taps, short movements and vertical drags do not turn pages. Buttons remain available.

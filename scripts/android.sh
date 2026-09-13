@@ -28,7 +28,7 @@ case "${1:-help}" in
     device_args=()
     if [[ -n "${2:-}" ]]; then device_args=(-s "$2"); fi
     adb "${device_args[@]}" install -r app/build/outputs/apk/debug/app-debug.apk
-    adb "${device_args[@]}" shell am start -n com.setlist/.MainActivity
+    adb "${device_args[@]}" shell am start -n com.setlist.debug/com.setlist.MainActivity
     ;;
   *)
     cat <<'HELP'

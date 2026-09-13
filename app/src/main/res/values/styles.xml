@@ -1,9 +1,45 @@
 <resources>
-    <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
-        <item name="android:fontFamily">sans</item>
-        <item name="android:colorAccent">@color/stage_accent</item>
+    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="colorPrimary">@color/stage_accent</item>
+        <item name="colorOnPrimary">@color/stage_background</item>
+        <item name="colorPrimaryContainer">@color/stage_accent_container</item>
+        <item name="colorOnPrimaryContainer">@color/stage_accent</item>
+        <item name="colorSecondary">@color/stage_success</item>
+        <item name="colorOnSecondary">@color/stage_background</item>
+        <item name="colorSurface">@color/stage_surface</item>
+        <item name="colorOnSurface">@color/stage_text</item>
+        <item name="colorOnSurfaceVariant">@color/stage_muted</item>
+        <item name="colorSurfaceVariant">@color/stage_surface_high</item>
+        <item name="colorOutline">@color/stage_outline</item>
+        <item name="colorError">@color/stage_error</item>
+        <item name="android:colorBackground">@color/stage_background</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowActionModeOverlay">true</item>
         <item name="android:windowBackground">@color/stage_background</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Setlist.Heading</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Setlist.Title</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Setlist.Body</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Setlist.Medium</item>
+    </style>
+    <style name="TextAppearance.Setlist.Heading" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="fontFamily">@font/manrope</item>
+        <item name="android:fontFamily">@font/manrope</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textColor">@color/stage_text</item>
+    </style>
+    <style name="TextAppearance.Setlist.Title" parent="TextAppearance.Setlist.Heading">
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="TextAppearance.Setlist.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/stage_text</item>
+    </style>
+    <style name="ShapeAppearance.Setlist.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
 </resources>

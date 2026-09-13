@@ -5,7 +5,7 @@
     <dimen name="space_lg">16dp</dimen>
     <dimen name="space_xl">24dp</dimen>
     <dimen name="space_2xl">32dp</dimen>
-    <dimen name="radius_surface">12dp</dimen>
+    <dimen name="radius_surface">16dp</dimen>
     <dimen name="touch_min">48dp</dimen>
     <dimen name="control_height">56dp</dimen>
     <dimen name="editor_max_width">960dp</dimen>

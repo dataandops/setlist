@@ -1,11 +1,14 @@
 <resources>
-    <color name="stage_background">#111820</color>
-    <color name="stage_surface">#1D2732</color>
-    <color name="stage_accent">#EAC78B</color>
-    <color name="stage_text">#F5F2EC</color>
-    <color name="stage_muted">#B4BECA</color>
+    <color name="stage_background">#11161C</color>
+    <color name="stage_surface">#1B232C</color>
+    <color name="stage_accent">#E6BF83</color>
+    <color name="stage_text">#F4F1EA</color>
+    <color name="stage_muted">#ADB9C6</color>
     <color name="stage_error">#FFB4AB</color>
-    <color name="stage_outline">#35414E</color>
-    <color name="stage_disabled">#718090</color>
-    <color name="stage_ripple">#33EAC78B</color>
+    <color name="stage_outline">#34414D</color>
+    <color name="stage_disabled">#72808D</color>
+    <color name="stage_ripple">#26E6BF83</color>
+    <color name="stage_surface_high">#26333E</color>
+    <color name="stage_accent_container">#3B3225</color>
+    <color name="stage_success">#A4D1BE</color>
 </resources>

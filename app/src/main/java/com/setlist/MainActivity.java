@@ -1,7 +1,8 @@
 package com.setlist;
 
-import android.app.Activity;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
@@ -21,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MainActivity extends Activity {
+public final class MainActivity extends AppCompatActivity {
     private static final int PDFS = 10, AUDIO = 11, REPLACE = 12;
     private SetlistApp app;
     private String setId, pendingSongId, pendingSetId;
@@ -56,7 +57,7 @@ public final class MainActivity extends Activity {
         }
         if (app.message != null) {
             String message = app.message; app.message = null;
-            new AlertDialog.Builder(this).setMessage(message).setPositiveButton("OK", null).show();
+            new MaterialAlertDialogBuilder(this).setMessage(message).setPositiveButton("OK", null).show();
         }
     }
     private void disable(View view) {
@@ -64,44 +65,50 @@ public final class MainActivity extends Activity {
         if (view instanceof ViewGroup group) for (int i = 0; i < group.getChildCount(); i++) disable(group.getChildAt(i));
     }
     private void home() {
-        content.addView(Ui.text(this, "YOUR STAGE, IN ORDER", Ui.CAPTION, Ui.ACCENT)); Ui.gap(content, 8);
-        content.addView(Ui.heading(this, "Setlist", Ui.DISPLAY));
-        content.addView(Ui.text(this, "The music. In the right order.", Ui.BODY, Ui.MUTED)); Ui.gap(content, 24);
-        content.addView(Ui.button(this, "+ New setlist", true, () -> nameDialog("New setlist", "", name -> { setId = app.library.createSet(name); refresh(); })));
-        Ui.gap(content, Ui.BODY);
+        LinearLayout brand = Ui.row(this); brand.addView(Ui.brand(this));
+        TextView wordmark = Ui.heading(this, "Setlist", Ui.TITLE); Ui.weighted(brand, wordmark); brand.addView(Ui.badge(this, "OFFLINE")); content.addView(brand);
+        Ui.gap(content, 24); content.addView(Ui.heading(this, "Your next great set.", Ui.DISPLAY)); Ui.gap(content, 8);
+        content.addView(Ui.text(this, "Your music, ready for the stage.", Ui.BODY, Ui.MUTED)); Ui.gap(content, 24);
+        if (!app.library.sets().isEmpty()) content.addView(Ui.withIcon(Ui.button(this, "New setlist", true, () -> nameDialog("New setlist", "", name -> { setId = app.library.createSet(name); refresh(); })), R.drawable.ic_add, false));
+        Ui.gap(content, 24); content.addView(Ui.eyebrow(this, "YOUR SETLISTS")); Ui.gap(content, 12);
         List<Models.Setlist> sets = app.library.sets();
         ScrollView scroll = new ScrollView(this); LinearLayout list = Ui.column(this); scroll.addView(list);
         content.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
         if (sets.isEmpty()) {
-            Ui.gap(list, 24); list.addView(Ui.heading(this, "Ready for your next gig", Ui.HEADING)); Ui.gap(list, 12);
-            list.addView(Ui.text(this, "Create a setlist, select your PDFs, and put your songs in playing order.", Ui.BODY, Ui.MUTED));
+            list.addView(Ui.emptyState(this, R.drawable.illustration_empty_set, "The stage is yours",
+                "Give your next gig a name. Then bring your songs together in playing order.", "Create your first setlist",
+                () -> nameDialog("New setlist", "", name -> { setId = app.library.createSet(name); refresh(); })));
         }
         for (Models.Setlist set : sets) {
-            LinearLayout card = Ui.column(this); Ui.card(card);
-            card.addView(Ui.heading(this, set.name(), Ui.TITLE)); Ui.gap(card, 8);
-            card.addView(Ui.text(this, set.count() + (set.count() == 1 ? " song" : " songs") + "  ·  On this device", Ui.CAPTION, Ui.MUTED));
+            LinearLayout card = Ui.row(this); Ui.card(card); card.addView(Ui.icon(this, R.drawable.ic_queue_music, Ui.ACCENT, 32));
+            LinearLayout labels = Ui.column(this); labels.addView(Ui.heading(this, set.name(), Ui.TITLE)); Ui.gap(labels, 8);
+            labels.addView(Ui.text(this, set.count() + (set.count() == 1 ? " song" : " songs") + "  ·  On this device", Ui.CAPTION, Ui.MUTED));
+            Ui.weighted(card, labels); card.addView(Ui.icon(this, R.drawable.ic_chevron_right, Ui.MUTED, 24));
             card.setContentDescription("Open setlist " + set.name()); card.setFocusable(true); card.setOnClickListener(v -> { setId = set.id(); refresh(); });
             list.addView(card); Ui.gap(list, 12);
         }
-        content.addView(Ui.button(this, "Try a sample set", false, () -> app.work(() -> { SampleScores.create(this, app.library); return "Sample set ready. Open it to explore three original sample charts."; })));
-        content.addView(Ui.text(this, "Offline. No account. Your files stay where they are.", Ui.CAPTION, Ui.MUTED));
+        Ui.gap(content, 12);
+        content.addView(Ui.withIcon(Ui.button(this, "Try a sample set", false, () -> app.work(() -> { SampleScores.create(this, app.library); return "Sample set ready. Open it to explore three original sample charts."; })), R.drawable.ic_play_arrow, false));
+        Ui.gap(content, 8); TextView footer = Ui.text(this, "No account. Your files stay yours.", 12, Ui.MUTED); footer.setGravity(Gravity.CENTER); content.addView(footer);
     }
     private void editor() {
         LinearLayout top = Ui.row(this);
-        Ui.weighted(top, Ui.button(this, "‹ All setlists", false, () -> { setId = null; refresh(); }));
-        Ui.weighted(top, Ui.button(this, "Set options", false, this::setOptions)); content.addView(top);
+        top.addView(Ui.quiet(this, "All setlists", R.drawable.ic_arrow_back, () -> { setId = null; refresh(); }), new LinearLayout.LayoutParams(-2, -2));
+        top.addView(new View(this), new LinearLayout.LayoutParams(0, 0, 1));
+        top.addView(Ui.quiet(this, "Options", R.drawable.ic_more_horiz, this::setOptions), new LinearLayout.LayoutParams(-2, -2)); content.addView(top);
+        Ui.gap(content, 16); content.addView(Ui.eyebrow(this, "THE RUNNING ORDER"));
         Ui.gap(content, Ui.BODY); content.addView(Ui.heading(this, app.library.setName(setId), Ui.HEADING));
         entries = app.library.entries(setId);
-        content.addView(Ui.text(this, entries.size() + " songs  ·  Hold ≡ to drag into order", Ui.CAPTION, Ui.MUTED)); Ui.gap(content, Ui.BODY);
+        content.addView(Ui.text(this, entries.size() + " songs  ·  Hold a handle to reorder", Ui.CAPTION, Ui.MUTED)); Ui.gap(content, Ui.BODY);
         LinearLayout actions = Ui.row(this);
-        Ui.weighted(actions, Ui.button(this, "+ Import PDFs", true, () -> pick(PDFS, null)));
-        Ui.weighted(actions, Ui.button(this, "Add saved song", false, this::addSaved)); content.addView(actions);
+        if (!entries.isEmpty()) Ui.weighted(actions, Ui.withIcon(Ui.button(this, "Import PDFs", false, () -> pick(PDFS, null)), R.drawable.ic_add, false));
+        Ui.weighted(actions, Ui.withIcon(Ui.button(this, "Saved songs", false, this::addSaved), R.drawable.ic_library_music, false)); content.addView(actions);
         Ui.gap(content, 8);
         if (entries.isEmpty()) {
-            LinearLayout empty = Ui.column(this); Ui.pad(empty, 24);
-            empty.addView(Ui.heading(this, "Your first song goes here", Ui.TITLE)); Ui.gap(empty, 12);
-            empty.addView(Ui.text(this, "Select one or more PDFs from device storage. Their filenames become song titles. Files open in place.", Ui.BODY, Ui.MUTED));
-            content.addView(empty, new LinearLayout.LayoutParams(-1, 0, 1));
+            ScrollView emptyScroll = new ScrollView(this);
+            emptyScroll.addView(Ui.emptyState(this, R.drawable.illustration_empty_set, "Every set starts with a song",
+                "Choose your PDF charts from device storage, or reuse a saved song. Your original files stay where they are.", "Import PDFs", () -> pick(PDFS, null)));
+            content.addView(emptyScroll, new LinearLayout.LayoutParams(-1, 0, 1));
         } else {
             RecyclerView list = new RecyclerView(this); list.setLayoutManager(new LinearLayoutManager(this));
             SongAdapter adapter = new SongAdapter(); list.setAdapter(adapter);
@@ -118,38 +125,36 @@ public final class MainActivity extends Activity {
             });
             drag.attachToRecyclerView(list); content.addView(list, new LinearLayout.LayoutParams(-1, 0, 1));
         }
-        Button start = Ui.button(this, "Start setlist  ▶", true, () -> startConcert(0)); start.setEnabled(!entries.isEmpty()); content.addView(start);
+        Button start = Ui.withIcon(Ui.button(this, "Start setlist", true, () -> startConcert(0)), R.drawable.ic_play_arrow, false); start.setEnabled(!entries.isEmpty()); content.addView(start);
     }
     private void startConcert(int index) {
         startActivity(new Intent(this, ConcertActivity.class).putExtra("set", setId).putExtra("song", index));
     }
     private void setOptions() {
-        new AlertDialog.Builder(this).setTitle("Set options").setItems(new String[]{"Rename setlist", "Delete setlist"}, (d, choice) -> {
+        new MaterialAlertDialogBuilder(this).setTitle("Set options").setItems(new String[]{"Rename setlist", "Delete setlist"}, (d, choice) -> {
             if (choice == 0) nameDialog("Rename setlist", app.library.setName(setId), name -> { app.library.renameSet(setId, name); refresh(); });
-            else new AlertDialog.Builder(this).setTitle("Delete this setlist?").setMessage("Songs remain in your saved library. Original files are never deleted.")
+            else new MaterialAlertDialogBuilder(this).setTitle("Delete this setlist?").setMessage("Songs remain in your saved library. Original files are never deleted.")
                 .setNegativeButton("Cancel", null).setPositiveButton("Delete", (dialog, which) -> { app.library.deleteSet(setId); setId = null; refresh(); }).show();
         }).show();
     }
     private void addSaved() {
-        List<Models.Song> songs = app.library.songs();
-        if (songs.isEmpty()) { new AlertDialog.Builder(this).setMessage("Import PDFs first. You can then reuse these songs in any setlist.").setPositiveButton("OK", null).show(); return; }
-        String[] names = new String[songs.size()]; for (int i = 0; i < names.length; i++) names[i] = songs.get(i).title();
-        new AlertDialog.Builder(this).setTitle("Add a saved song").setItems(names, (d, i) -> { app.library.addSong(setId, songs.get(i).id()); refresh(); }).setNegativeButton("Cancel", null).show();
+        startActivity(new Intent(this, SongLibraryActivity.class).putExtra("set", setId));
     }
     private void songOptions(int position) {
         if (position < 0 || position >= entries.size()) return;
         Models.Entry entry = entries.get(position); Models.Song song = entry.song();
-        String[] options = {"Open in concert", "Rename song", song.audio() == null ? "Attach MP3" : "Replace audio", "Locate / replace PDF", "Move up", "Move down", "Remove from setlist", "Song details"};
-        new AlertDialog.Builder(this).setTitle(song.title()).setItems(options, (d, choice) -> {
+        String[] options = {"Open in concert", "Rename song", song.audio() == null ? "Attach MP3" : "Replace audio", "Locate / replace PDF", "Move up", "Move down", "Remove from setlist", "Song details", "Edit metadata"};
+        new MaterialAlertDialogBuilder(this).setTitle(song.title()).setItems(options, (d, choice) -> {
             switch (choice) {
                 case 0 -> startConcert(position);
                 case 1 -> nameDialog("Rename song", song.title(), name -> { app.library.renameSong(song.id(), name); refresh(); });
                 case 2 -> pick(AUDIO, song.id());
                 case 3 -> pick(REPLACE, song.id());
                 case 4, 5 -> { Models.move(entries, position, position + (choice == 4 ? -1 : 1)); app.library.reorder(setId, entries); refresh(); }
-                case 6 -> new AlertDialog.Builder(this).setMessage("Remove “" + song.title() + "” from this setlist? The saved song and original files stay available.").setNegativeButton("Cancel", null).setPositiveButton("Remove", (dialog, which) -> { app.library.removeEntry(entry.id()); refresh(); }).show();
+                case 6 -> new MaterialAlertDialogBuilder(this).setMessage("Remove “" + song.title() + "” from this setlist? The saved song and original files stay available.").setNegativeButton("Cancel", null).setPositiveButton("Remove", (dialog, which) -> { app.library.removeEntry(entry.id()); refresh(); }).show();
+                case 8 -> SongMetadataDialog.show(this, app.library, song, this::refresh);
                 case 7 -> {
-                    AlertDialog.Builder details = new AlertDialog.Builder(this).setTitle("Song details").setMessage("Song ID\n" + song.id() + "\n\nSetlist entry ID\n" + entry.id() + "\n\nPDF\n" + song.pdf() + "\n\nAudio\n" + (song.audio() == null ? "None attached" : song.audio())).setPositiveButton("Close", null);
+                    AlertDialog.Builder details = new MaterialAlertDialogBuilder(this).setTitle("Song details").setMessage("Song ID\n" + song.id() + "\n\nSetlist entry ID\n" + entry.id() + "\n\nPDF\n" + song.pdf() + "\n\nAudio\n" + (song.audio() == null ? "None attached" : song.audio())).setPositiveButton("Close", null);
                     if (song.audio() != null) details.setNeutralButton("Detach audio", (dialog, which) -> { app.library.removeAudio(song); refresh(); });
                     details.show();
                 }
@@ -158,10 +163,12 @@ public final class MainActivity extends Activity {
     }
     private interface NameAction { void accept(String name); }
     private void nameDialog(String title, String initial, NameAction action) {
-        EditText input = new EditText(this); input.setSingleLine(true); input.setText(initial); input.setSelectAllOnFocus(true); input.setHint("Name");
+        EditText input = new com.google.android.material.textfield.TextInputEditText(this); input.setSingleLine(true); input.setText(initial); input.setSelectAllOnFocus(true); input.setHint("Name");
         input.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(120)});
-        LinearLayout box = Ui.column(this); Ui.pad(box, 24); box.addView(input);
-        AlertDialog dialog = new AlertDialog.Builder(this).setTitle(title).setView(box).setNegativeButton("Cancel", null).setPositiveButton("Save", null).create();
+        LinearLayout box = Ui.column(this); Ui.pad(box, 24);
+        com.google.android.material.textfield.TextInputLayout field = new com.google.android.material.textfield.TextInputLayout(this);
+        field.setBoxBackgroundMode(com.google.android.material.textfield.TextInputLayout.BOX_BACKGROUND_OUTLINE); field.setHint("Name"); field.addView(input); box.addView(field);
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this).setTitle(title).setView(box).setNegativeButton("Cancel", null).setPositiveButton("Save", null).create();
         dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             if (input.getText().toString().trim().isEmpty()) { input.setError("Enter a name"); return; }
             action.accept(input.getText().toString()); dialog.dismiss();
@@ -205,22 +212,22 @@ public final class MainActivity extends Activity {
             TextView number = Ui.text(MainActivity.this, "", Ui.TITLE, Ui.ACCENT); row.addView(number, new LinearLayout.LayoutParams(Ui.dp(MainActivity.this, 40), -2));
             LinearLayout labels = Ui.column(MainActivity.this); TextView title = Ui.heading(MainActivity.this, "", Ui.TITLE); TextView subtitle = Ui.text(MainActivity.this, "", Ui.CAPTION, Ui.MUTED);
             labels.addView(title); Ui.gap(labels, 4); labels.addView(subtitle); Ui.weighted(row, labels);
-            TextView handle = Ui.text(MainActivity.this, "≡", Ui.HEADING, Ui.MUTED); handle.setGravity(Gravity.CENTER); row.addView(handle, new LinearLayout.LayoutParams(Ui.dp(MainActivity.this, 48), Ui.dp(MainActivity.this, 56)));
+            android.widget.ImageView handle = Ui.icon(MainActivity.this, R.drawable.ic_drag_indicator, Ui.MUTED, 24); Ui.pad(handle, 12); row.addView(handle, new LinearLayout.LayoutParams(Ui.dp(MainActivity.this, 48), Ui.dp(MainActivity.this, 56)));
             return new SongHolder(row, number, title, subtitle, handle);
         }
         @Override public void onBindViewHolder(SongHolder h, int position) {
             Models.Song song = entries.get(position).song(); h.number.setText(String.format(java.util.Locale.US, "%02d", position + 1));
-            h.title.setText(song.title()); h.subtitle.setText(getString(song.audio() == null ? R.string.song_pdf : R.string.song_audio, song.pages()));
+            h.title.setText(song.title()); h.subtitle.setText((song.metadataLine().isEmpty() ? "" : song.metadataLine() + " · ") + getString(song.audio() == null ? R.string.song_pdf : R.string.song_audio, song.pages()));
             h.itemView.setContentDescription("Song " + (position + 1) + ": " + song.title() + ". Options"); h.itemView.setFocusable(true);
             h.itemView.setOnClickListener(v -> songOptions(h.getBindingAdapterPosition()));
-            h.handle.setContentDescription("Reorder " + song.title()); h.handle.setFocusable(true);
+            h.handle.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES); h.handle.setContentDescription("Reorder " + song.title()); h.handle.setFocusable(true);
             h.handle.setOnLongClickListener(v -> { drag.startDrag(h); return true; });
             h.handle.setOnClickListener(v -> songOptions(h.getBindingAdapterPosition()));
         }
         @Override public int getItemCount() { return entries.size(); }
     }
     private static final class SongHolder extends RecyclerView.ViewHolder {
-        final TextView number, title, subtitle, handle;
-        SongHolder(View view, TextView number, TextView title, TextView subtitle, TextView handle) { super(view); this.number = number; this.title = title; this.subtitle = subtitle; this.handle = handle; }
+        final TextView number, title, subtitle; final android.widget.ImageView handle;
+        SongHolder(View view, TextView number, TextView title, TextView subtitle, android.widget.ImageView handle) { super(view); this.number = number; this.title = title; this.subtitle = subtitle; this.handle = handle; }
     }
 }
