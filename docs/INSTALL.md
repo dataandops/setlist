@@ -3,8 +3,8 @@
 Requires **Android 8.0 or newer**. Phones and tablets are supported.
 No computer, Android Studio, emulator, account or GitHub login is needed.
 
-1. On your Android device, [download Setlist 0.1.0](https://github.com/dataandops/setlist/releases/download/v0.1.0/Setlist-0.1.0.apk).
-2. Open the downloaded **Setlist-0.1.0.apk** from your browser or Downloads.
+1. On your Android device, [download Setlist 0.0.1](https://github.com/dataandops/setlist/releases/download/v0.0.1/Setlist-0.0.1.apk).
+2. Open the downloaded **Setlist-0.0.1.apk** from your browser or Downloads.
 3. If Android asks for permission, tap **Settings**, enable **Allow from this source** for the browser or Files app you used, then return to the installer.
 4. Tap **Install**, then **Open**.
 

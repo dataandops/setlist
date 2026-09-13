@@ -5,7 +5,7 @@ dark-stage design system: ink surfaces, warm amber controls, and readable scores
 
 ## Download
 
-[Download Setlist 0.1.0 for Android](https://github.com/dataandops/setlist/releases/download/v0.1.0/Setlist-0.1.0.apk)
+[Download Setlist 0.0.1 for Android](https://github.com/dataandops/setlist/releases/download/v0.0.1/Setlist-0.0.1.apk)
 
 [Installation instructions to share with a friend](docs/INSTALL.md). Android 8.0+;
 no computer or GitHub account needed. This is a directly distributed APK.
