@@ -1,0 +1,4 @@
+<resources>
+    <string name="song_pdf">%1$d pages · PDF</string>
+    <string name="song_audio">%1$d pages · PDF + audio</string>
+</resources>
