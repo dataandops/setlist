@@ -47,8 +47,15 @@ public final class MainActivity extends AppCompatActivity {
     private void refresh() {
         LinearLayout root = Ui.column(this); root.setBackgroundColor(Ui.BG);
         content = Ui.column(this); Ui.pad(content, Ui.BODY);
-        LinearLayout.LayoutParams width = new LinearLayout.LayoutParams(Math.min(getResources().getDisplayMetrics().widthPixels, Ui.dp(this, 960)), -1);
-        width.gravity = Gravity.CENTER_HORIZONTAL; root.addView(content, width); setContentView(root);
+        // Fill the space left after system-bar/cutout insets; only cap the column on screens wider than 960 dp.
+        int maxWidth = Ui.dp(this, 960);
+        LinearLayout.LayoutParams width = new LinearLayout.LayoutParams(getResources().getDisplayMetrics().widthPixels > maxWidth ? maxWidth : -1, -1);
+        width.gravity = Gravity.CENTER_HORIZONTAL;
+        if (homeScrolls()) {
+            ScrollView page = new ScrollView(this); page.setFillViewport(true);
+            page.addView(content, new ViewGroup.LayoutParams(-1, -2)); root.addView(page, width);
+        } else root.addView(content, width);
+        setContentView(root);
         if (android.os.Build.VERSION.SDK_INT >= 30) Ui.insets(root);
         if (setId == null) home(); else editor();
         if (app.busy) {
@@ -60,6 +67,8 @@ public final class MainActivity extends AppCompatActivity {
             new MaterialAlertDialogBuilder(this).setMessage(message).setPositiveButton("OK", null).show();
         }
     }
+    // Short screens (phones in landscape) can't fit the header, list and footer, so Home scrolls as one page.
+    private boolean homeScrolls() { return setId == null && getResources().getConfiguration().screenHeightDp < 480; }
     private void disable(View view) {
         view.setEnabled(false);
         if (view instanceof ViewGroup group) for (int i = 0; i < group.getChildCount(); i++) disable(group.getChildAt(i));
@@ -72,8 +81,9 @@ public final class MainActivity extends AppCompatActivity {
         if (!app.library.sets().isEmpty()) content.addView(Ui.withIcon(Ui.button(this, "New setlist", true, () -> nameDialog("New setlist", "", name -> { setId = app.library.createSet(name); refresh(); })), R.drawable.ic_add, false));
         Ui.gap(content, 24); content.addView(Ui.eyebrow(this, "YOUR SETLISTS")); Ui.gap(content, 12);
         List<Models.Setlist> sets = app.library.sets();
-        ScrollView scroll = new ScrollView(this); LinearLayout list = Ui.column(this); scroll.addView(list);
-        content.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
+        LinearLayout list = Ui.column(this);
+        if (homeScrolls()) content.addView(list);
+        else { ScrollView scroll = new ScrollView(this); scroll.addView(list); content.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1)); }
         if (sets.isEmpty()) {
             list.addView(Ui.emptyState(this, R.drawable.illustration_empty_set, "The stage is yours",
                 "Give your next gig a name. Then bring your songs together in playing order.", "Create your first setlist",

@@ -1,0 +1,6 @@
+<resources>
+    <dimen name="space_lg">16dp</dimen>
+    <dimen name="space_xl">24dp</dimen>
+    <dimen name="space_2xl">32dp</dimen>
+    <dimen name="control_height">56dp</dimen>
+</resources>
