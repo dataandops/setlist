@@ -111,7 +111,7 @@ public final class Library extends SQLiteOpenHelper {
         try (Cursor c = context.getContentResolver().query(uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null)) {
             if (c != null && c.moveToFirst() && !c.isNull(0)) return c.getString(0);
         } catch (RuntimeException ignored) { /* Providers may not expose a display name. */ }
-        return "Untitled song";
+        return "file".equals(uri.getScheme()) && uri.getLastPathSegment() != null ? uri.getLastPathSegment() : "Untitled song";
     }
     public Models.Song importPdf(String setId, Uri uri) throws IOException {
         try {

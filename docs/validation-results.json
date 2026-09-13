@@ -1,0 +1,308 @@
+{
+  "date": "2026-09-13",
+  "android_api": 35,
+  "devices": [
+    {
+      "name": "Setlist_Tablet",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "cached_draw_ms_range": [
+        6,
+        181
+      ],
+      "uncached_draw_ms_range": [
+        69,
+        817
+      ],
+      "benchmark": [
+        "12 pages at 1600x2000: coldMaxMs=18 cacheMs=0 cacheBytes=26843952"
+      ],
+      "frames": [
+        {
+          "test": "com.setlist.ConcertFlowTest-audioPausesAndStopsOnSongChange",
+          "page": 1,
+          "draw_ms": 556,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-audioPausesAndStopsOnSongChange",
+          "page": 1,
+          "draw_ms": 48,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-audioPausesAndStopsOnSongChange",
+          "page": 1,
+          "draw_ms": 6,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-missingPdfCanBeSkippedWithoutDisplayingWrongSong",
+          "page": 1,
+          "draw_ms": 307,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 1,
+          "draw_ms": 169,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 2,
+          "draw_ms": 35,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 3,
+          "draw_ms": 108,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 1,
+          "draw_ms": 36,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 3,
+          "draw_ms": 181,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 1,
+          "draw_ms": 116,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 2,
+          "draw_ms": 100,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 1,
+          "draw_ms": 38,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 1,
+          "draw_ms": 397,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 2,
+          "draw_ms": 33,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 2,
+          "draw_ms": 201,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 3,
+          "draw_ms": 97,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 3,
+          "draw_ms": 69,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 1,
+          "draw_ms": 39,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-setlistPickerJumpsAndRecreationKeepsPage",
+          "page": 1,
+          "draw_ms": 817,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-setlistPickerJumpsAndRecreationKeepsPage",
+          "page": 1,
+          "draw_ms": 107,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-setlistPickerJumpsAndRecreationKeepsPage",
+          "page": 2,
+          "draw_ms": 62,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-setlistPickerJumpsAndRecreationKeepsPage",
+          "page": 2,
+          "draw_ms": 72,
+          "cache_hit": false
+        }
+      ]
+    },
+    {
+      "name": "Setlist_Phone",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "cached_draw_ms_range": [
+        17,
+        96
+      ],
+      "uncached_draw_ms_range": [
+        38,
+        512
+      ],
+      "benchmark": [
+        "12 pages at 1600x2000: coldMaxMs=43 cacheMs=0 cacheBytes=26843952"
+      ],
+      "frames": [
+        {
+          "test": "com.setlist.ConcertFlowTest-audioPausesAndStopsOnSongChange",
+          "page": 1,
+          "draw_ms": 227,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-audioPausesAndStopsOnSongChange",
+          "page": 1,
+          "draw_ms": 96,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-audioPausesAndStopsOnSongChange",
+          "page": 1,
+          "draw_ms": 21,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-missingPdfCanBeSkippedWithoutDisplayingWrongSong",
+          "page": 1,
+          "draw_ms": 151,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 1,
+          "draw_ms": 181,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 2,
+          "draw_ms": 24,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 3,
+          "draw_ms": 66,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 1,
+          "draw_ms": 26,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 3,
+          "draw_ms": 58,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 1,
+          "draw_ms": 36,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 2,
+          "draw_ms": 45,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-pageTurnsAdvanceToNextSongAndFinish",
+          "page": 1,
+          "draw_ms": 38,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 1,
+          "draw_ms": 512,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 2,
+          "draw_ms": 32,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 2,
+          "draw_ms": 54,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 3,
+          "draw_ms": 49,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 3,
+          "draw_ms": 249,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-rotationPreservesScoreInPortraitAndLandscape",
+          "page": 1,
+          "draw_ms": 20,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-setlistPickerJumpsAndRecreationKeepsPage",
+          "page": 1,
+          "draw_ms": 460,
+          "cache_hit": false
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-setlistPickerJumpsAndRecreationKeepsPage",
+          "page": 1,
+          "draw_ms": 19,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-setlistPickerJumpsAndRecreationKeepsPage",
+          "page": 2,
+          "draw_ms": 17,
+          "cache_hit": true
+        },
+        {
+          "test": "com.setlist.ConcertFlowTest-setlistPickerJumpsAndRecreationKeepsPage",
+          "page": 2,
+          "draw_ms": 206,
+          "cache_hit": false
+        }
+      ]
+    }
+  ]
+}

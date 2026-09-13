@@ -1,4 +1,5 @@
 <resources>
     <string name="song_pdf">%1$d pages · PDF</string>
     <string name="song_audio">%1$d pages · PDF + audio</string>
+    <string name="reader_progress">Song %1$d of %2$d · Page %3$d of %4$d</string>
 </resources>

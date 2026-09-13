@@ -120,7 +120,9 @@ public final class MainActivity extends Activity {
         }
         Button start = Ui.button(this, "Start setlist  ▶", true, () -> startConcert(0)); start.setEnabled(!entries.isEmpty()); content.addView(start);
     }
-    private void startConcert(int index) { Toast.makeText(this, "Concert reader is coming in the next implementation stage.", Toast.LENGTH_SHORT).show(); }
+    private void startConcert(int index) {
+        startActivity(new Intent(this, ConcertActivity.class).putExtra("set", setId).putExtra("song", index));
+    }
     private void setOptions() {
         new AlertDialog.Builder(this).setTitle("Set options").setItems(new String[]{"Rename setlist", "Delete setlist"}, (d, choice) -> {
             if (choice == 0) nameDialog("Rename setlist", app.library.setName(setId), name -> { app.library.renameSet(setId, name); refresh(); });
