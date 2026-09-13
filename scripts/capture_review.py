@@ -11,7 +11,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument("serial")
 parser.add_argument("prefix", choices=["tablet", "phone"])
-parser.add_argument("--package", default="com.setlist")
+parser.add_argument("--package", default="com.dataandops.setlist")
 args = parser.parse_args()
 ADB = [str(ROOT / ".tools/android-sdk/platform-tools/adb"), "-s", args.serial]
 

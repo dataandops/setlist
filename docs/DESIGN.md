@@ -39,7 +39,7 @@ Pre-code review: hierarchy obvious in three seconds—yes; at most two focal poi
 The debug-only `DesignSystemActivity` displays the actual shared components. Launch with:
 
 ```sh
-.tools/android-sdk/platform-tools/adb shell am start -n com.setlist.debug/com.setlist.DesignSystemActivity
+.tools/android-sdk/platform-tools/adb shell am start -n com.dataandops.setlist.debug/com.setlist.DesignSystemActivity
 ```
 
 [Tablet editor](screenshots/tablet-editor.png) · [Landscape reader](screenshots/tablet-reader.png) · [Portrait reader](screenshots/tablet-reader-portrait.png)
