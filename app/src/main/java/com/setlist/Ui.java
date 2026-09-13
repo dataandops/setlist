@@ -34,10 +34,16 @@ final class Ui {
         };
         return resource == 0 ? Math.round(value * c.getResources().getDisplayMetrics().density) : c.getResources().getDimensionPixelSize(resource);
     }
+    static boolean compact(Context c) { return c.getResources().getConfiguration().smallestScreenWidthDp < 600; }
+    // Phones step headings down one notch; body, caption and metadata sizes stay readable at full size.
+    private static int typeSize(Context c, int size) {
+        if (!compact(c)) return size;
+        return switch (size) { case DISPLAY -> 30; case HEADING -> 24; case TITLE -> 18; default -> size; };
+    }
     static LinearLayout column(Context c) { LinearLayout v = new LinearLayout(c); v.setOrientation(LinearLayout.VERTICAL); return v; }
     static LinearLayout row(Context c) { LinearLayout v = new LinearLayout(c); v.setGravity(Gravity.CENTER_VERTICAL); return v; }
     static TextView text(Context c, String text, int size, int color) {
-        TextView v = new TextView(c); v.setText(text); v.setTextSize(size); v.setTextColor(color);
+        TextView v = new TextView(c); v.setText(text); v.setTextSize(typeSize(c, size)); v.setTextColor(color);
         v.setTypeface(bodyFont); v.setFontVariationSettings("'wght' 400, 'opsz' 18");
         v.setIncludeFontPadding(false); v.setLineSpacing(0, 1.22f); return v;
     }
@@ -87,7 +93,7 @@ final class Ui {
     static LinearLayout emptyState(Context c, int illustration, String title, String message, String action, Runnable onAction) {
         LinearLayout box = column(c); box.setGravity(Gravity.CENTER_HORIZONTAL); pad(box, 24);
         ImageView art = new ImageView(c); art.setImageResource(illustration); art.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        box.addView(art, new LinearLayout.LayoutParams(dp(c, 200), dp(c, 136))); gap(box, 20);
+        box.addView(art, compact(c) ? new LinearLayout.LayoutParams(dp(c, 160), dp(c, 109)) : new LinearLayout.LayoutParams(dp(c, 200), dp(c, 136))); gap(box, 20);
         TextView heading = heading(c, title, TITLE); heading.setGravity(Gravity.CENTER); box.addView(heading); gap(box, 12);
         TextView copy = text(c, message, BODY, MUTED); copy.setGravity(Gravity.CENTER); copy.setMaxWidth(dp(c, 400)); box.addView(copy);
         if (action != null) { gap(box, 20); Button button = button(c, action, true, onAction); box.addView(button, new LinearLayout.LayoutParams(-2, -2)); }

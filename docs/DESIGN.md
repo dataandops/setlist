@@ -12,11 +12,13 @@ Setlist is an offline concert companion. Its two main tasks are assembling a run
 | Text / supporting text | `#F4F1EA` / `#ADB9C6` |
 | Outline | `#34414D` |
 | Success / error | Sage `#A4D1BE` / `#FFB4AB` |
-| Headings | Bundled Manrope, weight 650; 36 / 28 / 20 sp |
-| Body / caption / eyebrow | Bundled Inter; 16 / 14 / 12 sp |
-| Spacing | 4 / 8 / 12 / 16 / 24 / 32 dp |
+| Headings | Bundled Manrope, weight 650; 36 / 28 / 20 sp (phones: 30 / 24 / 18 sp) |
+| Body / caption / eyebrow | Bundled Inter; 16 / 14 / 12 sp on every device |
+| Spacing | 4 / 8 / 12 / 16 / 24 / 32 dp (phones: 4 / 8 / 12 / 12 / 16 / 24 dp) |
 | Shape | 16 dp corners, no decorative shadows |
-| Targets | 48 dp minimum; principal controls 56 dp |
+| Targets | 48 dp minimum; principal controls 56 dp (phones: 48 dp) |
+
+Phones (smallest width under 600 dp) use the compact scale in `values/dimens.xml` and `Ui.typeSize`; tablets use `values-sw600dp`.
 
 Material 3 supplies dialogs, buttons and outlined inputs. Material Symbols Rounded supply interface glyphs. Fonts and vectors are packaged in the APK and work offline. See [attributions](THIRD_PARTY.md).
 
