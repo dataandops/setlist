@@ -37,7 +37,7 @@ instructions. Reordering includes accessible move-up/down alternatives.
 | Score | White PDF page at original aspect ratio against the ink canvas |
 
 Buttons and cards share pressed/focus ripples. Disabled buttons use neutral
-surfaces and muted labels. Names wrap instead of being silently clipped. Body
+surfaces and muted labels. Editor names wrap; the reader limits its title to two lines to preserve score space. Body
 text respects system font scaling. No decorative motion in the concert view.
 
 The source of truth for color is `res/values/colors.xml`; dimensions live in
@@ -48,7 +48,17 @@ caption/body/title/heading/display scale. New screens use these components.
 
 ![Dark-stage tablet editor](screenshots/tablet-editor.png)
 
-Validation: Android 15 tablet screenshot reviewed for text contrast, target
-spacing, consistent geometry and hierarchy. Phone and concert-reader checks
-follow in the reader PR. TalkBack/manual large-font checks remain part of
-physical-device acceptance, not a claim from this screenshot.
+### Portrait tablet reader
+
+![Portrait tablet score with page and song navigation](screenshots/tablet-reader-portrait.png)
+
+### Phone layouts
+
+[Phone editor](screenshots/phone-editor.png) · [Phone reader](screenshots/phone-reader.png)
+
+Validation: signed release screenshots reviewed on the Android 15 tablet in
+portrait and landscape and on the portrait phone. Checks covered text contrast,
+target spacing, consistent geometry, score aspect ratio and visible navigation.
+Automated rotation tests confirm page preservation and subsequent page/song turns
+on both device profiles. TalkBack and large-font physical-device checks remain
+part of acceptance testing.

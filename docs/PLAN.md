@@ -17,3 +17,7 @@ navigation is explicit buttons (keyboard/pedal arrow support can accompany it).
 Performance target: page change within 1–2 seconds. Measure cache hits and cold
 renders in the emulator, disclose that complex PDFs and real devices need their
 own validation. Prepare adjacent pages and the next song's first page.
+
+The foundation is PR #1. The second branch, `feat/concert-reader`, builds on it.
+Review/merge the foundation first, then retarget the reader PR to main (and rebase
+if the foundation was squash-merged). Neither PR is automatically merged.

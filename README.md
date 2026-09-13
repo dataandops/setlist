@@ -3,7 +3,14 @@
 A native Android app for a keyboard player's concert setlists. Offline, with a
 dark-stage design system: ink surfaces, warm amber controls, and readable scores.
 
-## Current foundation
+## Download
+
+[Download Setlist 0.1.0 for Android](https://github.com/dataandops/setlist/releases/download/v0.1.0/Setlist-0.1.0.apk)
+
+[Installation instructions to share with a friend](docs/INSTALL.md). Android 8.0+;
+no computer or GitHub account needed. This is a directly distributed APK.
+
+## Features
 
 - Create, rename and delete setlists; add, remove and reuse songs.
 - Select multiple PDFs from device storage. Filenames become editable song names.
@@ -14,7 +21,14 @@ dark-stage design system: ink surfaces, warm amber controls, and readable scores
 - Attach audio, inspect file references, and relink moved PDFs.
 - Generate an original sample set to explore the app without supplying files.
 
-The next implementation PR adds the concert PDF reader and audio controls.
+- Start on the first score, move through pages, and advance into the next song.
+- Jump to any song from the concert setlist picker; return to editing at any time.
+- Render pages off the main thread, with bounded RAM caching and lookahead.
+- Play, pause and seek MP3s; audio stops when leaving a song or the reader.
+- Keep the screen awake during a set, with optional keyboard/pedal navigation.
+
+See [the emulator guide](docs/EMULATOR.md) to try the app without a device and
+[validation results](docs/VALIDATION.md) for tests and performance limits.
 
 ## Build
 
@@ -34,6 +48,8 @@ checked into Git. The Gradle wrapper and dependency versions are pinned.
 
 - [Design system](docs/DESIGN.md)
 - [Implementation stages](docs/PLAN.md)
+- [Emulator setup and usage](docs/EMULATOR.md)
+- [Validation and performance](docs/VALIDATION.md)
 - Shared palette: `app/src/main/res/values/colors.xml`
 - Shared dimensions: `app/src/main/res/values/dimens.xml`
 - Native components and type scale: `app/src/main/java/com/setlist/Ui.java`
