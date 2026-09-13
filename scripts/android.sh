@@ -6,7 +6,7 @@ cd "$SETLIST_ROOT"
 # Prefer a full JDK; some Macs report a JRE from java_home by default.
 if [[ -z "${JAVA_HOME:-}" || ! -x "$JAVA_HOME/bin/javac" ]]; then
   for candidate in /Library/Java/JavaVirtualMachines/*/Contents/Home; do
-    if [[ -x "$candidate/bin/javac" ]] && "$candidate/bin/javac" -version 2>&1 | rg -q '^javac 17'; then
+    if [[ -x "$candidate/bin/javac" ]] && "$candidate/bin/javac" -version 2>&1 | grep -q '^javac 17'; then
       export JAVA_HOME="$candidate"
       break
     fi
