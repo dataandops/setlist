@@ -1,0 +1,11 @@
+<resources>
+    <color name="stage_background">#111820</color>
+    <color name="stage_surface">#1D2732</color>
+    <color name="stage_accent">#EAC78B</color>
+    <color name="stage_text">#F5F2EC</color>
+    <color name="stage_muted">#B4BECA</color>
+    <color name="stage_error">#FFB4AB</color>
+    <color name="stage_outline">#35414E</color>
+    <color name="stage_disabled">#718090</color>
+    <color name="stage_ripple">#33EAC78B</color>
+</resources>
