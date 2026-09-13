@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application android:name=".SetlistApp" android:allowBackup="false"
-        android:label="Setlist" android:icon="@drawable/ic_setlist"
+        android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true" android:theme="@style/AppTheme">
+        <activity android:name=".SongLibraryActivity" android:exported="false" />
         <activity android:name=".ConcertActivity" android:exported="false" />
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>

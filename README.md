@@ -59,3 +59,7 @@ available at their selected locations. Local document providers with seekable
 file descriptors are supported; cloud-only/streaming documents should first be
 saved to the device. Unprotected PDFs only. Removing a setlist keeps saved songs
 available for reuse and never deletes source files.
+
+### Dark stage preview
+
+The Material 3 design uses bundled Manrope/Inter fonts, rounded symbols and a custom adaptive piano/setlist icon. Saved songs can be searched by title, artist, key, BPM, notes and file metadata, with a source-setlist filter. Edit metadata from a song’s options. See [the design system](docs/DESIGN.md). Debug builds install separately as **Setlist Preview**.

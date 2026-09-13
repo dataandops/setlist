@@ -12,12 +12,13 @@ to a song with a stable ID, title, persisted PDF URI and optional audio URI.
 
 Confirmed: open existing device files in place through persisted Android document
 permissions; no permanent copies. Moved or deleted files can be relinked. Assumptions: one PDF per song; repeat songs allowed in a set; page
-navigation is explicit buttons (keyboard/pedal arrow support can accompany it).
+navigation supports buttons, left/right PDF swipes, and keyboard/pedal arrow events.
 
 Performance target: page change within 1–2 seconds. Measure cache hits and cold
 renders in the emulator, disclose that complex PDFs and real devices need their
 own validation. Prepare adjacent pages and the next song's first page.
 
-The foundation is PR #1. The second branch, `feat/concert-reader`, builds on it.
-Review/merge the foundation first, then retarget the reader PR to main (and rebase
-if the foundation was squash-merged). Neither PR is automatically merged.
+PR #1 (foundation) and PR #2 (concert reader) are merged. The next PR contains the
+Material 3 dark-stage system, custom adaptive icon, empty states, responsive reader
+controls, editable artist/key/BPM/notes, saved-song search and setlist filtering,
+and bidirectional PDF swipe navigation. No PRs are automatically merged.

@@ -75,4 +75,37 @@ public class LibraryTest {
         Models.Entry entry = library.entries(set).get(0);
         assertEquals(entryId, entry.id()); assertEquals(song.id(), entry.song().id()); assertEquals("New title", entry.song().title());
     }
+    @Test public void metadataSearchCombinesFieldsAndSetlistFilter() throws Exception {
+        String one = library.createSet("One"), two = library.createSet("Two");
+        Models.Song song = library.importPdf(one, Uri.fromFile(source));
+        library.renameSong(song.id(), "Midnight Drive");
+        library.updateMetadata(song.id(), "Beyoncé", "F#m", "120", "Piano intro");
+        assertEquals(1, library.searchSongs(one, "BEYONCE piano 120").size());
+        assertEquals(1, library.searchSongs(null, "midnight F#m").size());
+        assertTrue(library.searchSongs(two, "midnight").isEmpty());
+        assertTrue(library.searchSongs(one, "missing").isEmpty());
+        library.addSong(two, song.id()); library.addSong(two, song.id());
+        assertEquals(1, library.searchSongs(two, "intro").size());
+        library.close(); library = new Library(context, "test-library.db", "unused");
+        assertEquals("Beyoncé", library.entries(one).get(0).song().artist());
+        try { library.updateMetadata(song.id(), "", "", "-1", ""); fail("Invalid tempo accepted"); }
+        catch (IllegalArgumentException expected) { assertEquals("120", library.songs().get(0).bpm()); }
+    }
+    @Test public void versionOneUpgradePreservesSongsFilesAndRunningOrder() {
+        library.close(); context.deleteDatabase("test-library.db");
+        try (android.database.sqlite.SQLiteDatabase db = context.openOrCreateDatabase("test-library.db", 0, null)) {
+            db.execSQL("CREATE TABLE setlists (id TEXT PRIMARY KEY, name TEXT NOT NULL)");
+            db.execSQL("CREATE TABLE songs (id TEXT PRIMARY KEY, title TEXT NOT NULL, pdf TEXT NOT NULL, audio TEXT, pages INTEGER NOT NULL)");
+            db.execSQL("CREATE TABLE entries (id TEXT PRIMARY KEY, setlist_id TEXT NOT NULL, song_id TEXT NOT NULL, position INTEGER NOT NULL)");
+            db.execSQL("INSERT INTO setlists VALUES ('set','Gig')");
+            db.execSQL("INSERT INTO songs VALUES ('song','Old song','content://original/score',NULL,3)");
+            db.execSQL("INSERT INTO entries VALUES ('entry','set','song',0)"); db.setVersion(1);
+        }
+        library = new Library(context, "test-library.db", "unused");
+        Models.Entry entry = library.entries("set").get(0);
+        assertEquals("entry", entry.id()); assertEquals("song", entry.song().id());
+        assertEquals("content://original/score", entry.song().pdf()); assertEquals("", entry.song().notes());
+        library.updateMetadata("song", "Artist", "C", "90", "Intro");
+        assertEquals(1, library.searchSongs("set", "Artist Intro").size());
+    }
 }

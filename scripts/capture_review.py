@@ -11,6 +11,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument("serial")
 parser.add_argument("prefix", choices=["tablet", "phone"])
+parser.add_argument("--package", default="com.setlist")
 args = parser.parse_args()
 ADB = [str(ROOT / ".tools/android-sdk/platform-tools/adb"), "-s", args.serial]
 
@@ -52,8 +53,8 @@ def capture(name):
 
 adb("shell", "settings", "put", "system", "accelerometer_rotation", "0")
 adb("shell", "settings", "put", "system", "user_rotation", "0")
-adb("shell", "am", "force-stop", "com.setlist")
-adb("shell", "am", "start", "-n", "com.setlist/.MainActivity")
+adb("shell", "am", "force-stop", args.package)
+adb("shell", "am", "start", "-n", args.package + "/com.setlist.MainActivity")
 text("Setlist")
 cards = [n.attrib for n in hierarchy().iter("node") if "sample set" in n.get("content-desc", "")]
 if not cards:
@@ -62,9 +63,9 @@ if not cards:
     tap(text("OK"))
 capture("home")
 tap(find(lambda n: n.get("content-desc", "").startswith("Open setlist Friday night")))
-text("Start setlist  ▶")
+text("Start setlist")
 capture("editor")
-tap(text("Start setlist  ▶"))
+tap(text("Start setlist"))
 find(lambda n: n.get("content-desc", "").endswith(", page 1 of 3"))
 capture("reader")
 if args.prefix == "tablet":

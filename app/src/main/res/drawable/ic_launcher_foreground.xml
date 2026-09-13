@@ -1,0 +1,7 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+<path android:fillColor="@color/stage_accent" android:pathData="M37,28 L65,28 Q71,28 71,34 L71,74 Q71,80 65,80 L37,80 Q31,80 31,74 L31,34 Q31,28 37,28 Z" />
+<path android:fillColor="@color/stage_background" android:pathData="M39,38h24v4H39z M39,47h18v4H39z M39,59h24v14H39z" />
+<path android:fillColor="@color/stage_accent" android:pathData="M46,59h2v14h-2z M54,59h2v14h-2z" />
+<path android:fillColor="@color/stage_background" android:pathData="M44,59h5v8h-5z M52,59h5v8h-5z" />
+<path android:fillColor="@color/stage_accent" android:pathData="M76,39h3v30h-3z" />
+</vector>

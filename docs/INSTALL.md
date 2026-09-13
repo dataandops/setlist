@@ -34,3 +34,9 @@ to read them and does not make permanent copies. If you move a PDF, use the song
 For future updates, install the new APK over this one to keep your saved setlists.
 Uninstalling the app removes its saved setlists and file links; original music
 files remain on your device.
+
+Swipe left on the score to advance a page; swipe right to go back. At a song boundary, swiping continues to the adjacent song. The last page opens the set-complete dialog. Taps, short movements and vertical drags do not turn pages. Buttons remain available.
+
+From a score, tap **Setlist → Home** to return to all setlists. **Edit setlist** returns to the current running order; **Back to score** resumes viewing. Leaving for Home stops audio.
+
+Saved-song results show 25 songs per page, with Previous/Next controls, a result range and a page count. Search and setlist-filter changes return to page one; rotation preserves the selected page.

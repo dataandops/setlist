@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="200dp" android:height="136dp" android:viewportWidth="200" android:viewportHeight="136">
+<path android:fillColor="@color/stage_surface_high" android:pathData="M36,68a64,52 0,1 0,128 0a64,52 0,1 0,-128 0"/>
+<group android:rotation="10" android:pivotX="100" android:pivotY="68"><path android:fillColor="@color/stage_surface" android:strokeColor="@color/stage_outline" android:strokeWidth="2" android:pathData="M74,22h62q8,0 8,8v84q0,8 -8,8H74q-8,0 -8,-8V30q0,-8 8,-8Z"/></group>
+<path android:fillColor="@color/stage_background" android:strokeColor="@color/stage_accent" android:strokeWidth="2" android:pathData="M64,14h62q8,0 8,8v84q0,8 -8,8H64q-8,0 -8,-8V22q0,-8 8,-8Z"/>
+<path android:fillColor="@color/stage_accent" android:pathData="M70,32h34v4H70z"/>
+<path android:fillColor="@color/stage_outline" android:pathData="M70,48h8v4h-8z M84,48h36v4H84z M70,62h8v4h-8z M84,62h27v4H84z M70,76h8v4h-8z M84,76h32v4H84z"/>
+<path android:fillColor="@color/stage_accent" android:pathData="M137,86a20,20 0,1 0,0 40a20,20 0,1 0,0 -40"/>
+<path android:strokeColor="@color/stage_background" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="M137,98v16 M129,106h16"/>
+</vector>
