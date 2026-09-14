@@ -61,6 +61,11 @@ if not cards:
     tap(text("Try a sample set"))
     find(lambda n: "Sample set ready" in n.get("text", ""))
     tap(text("OK"))
+    # Wait for the confirmation dialog to finish closing so it isn't caught mid-fade.
+    deadline = time.monotonic() + 12
+    while time.monotonic() < deadline and any("Sample set ready" in n.get("text", "") for n in hierarchy().iter("node")):
+        time.sleep(0.2)
+    time.sleep(0.5)
 capture("home")
 tap(find(lambda n: n.get("content-desc", "").startswith("Open setlist Friday night")))
 text("Start setlist")

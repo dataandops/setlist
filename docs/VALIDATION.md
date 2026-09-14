@@ -1,8 +1,9 @@
 # Validation — 2026-09-13
 
 `assembleDebug`, `lintDebug`, and `connectedDebugAndroidTest` pass. The complete
-21-test suite passed on both Android 15 ARM64 emulators: Pixel Tablet and Pixel 7,
-for 42 successful checks for the Material design and swipe update. The earlier reader release also passed release build/lint and signed installation; this update has been verified as a debug preview.
+23-test suite passed on both Android 15 ARM64 emulators: Pixel Tablet and Pixel 7,
+for 46 successful checks, run on `main` after the compact phone layout, phone-landscape
+fixes and `com.dataandops.setlist` application ID. The earlier reader release also passed release build/lint and signed installation; this update has been verified as a debug preview.
 
 ## Automated coverage
 
