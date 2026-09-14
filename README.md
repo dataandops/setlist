@@ -3,12 +3,42 @@
 A native Android app for a keyboard player's concert setlists. Offline, with a
 dark-stage design system: ink surfaces, warm amber controls, and readable scores.
 
+<p align="center">
+  <img src="docs/screenshots/tablet-reader.png" width="760" alt="Concert reader on a tablet in landscape: the Midnight Drive score beside a sidebar with Next page, Previous and the upcoming song">
+</p>
+
 ## Download
 
 [Download Setlist 0.0.1 for Android](https://github.com/dataandops/setlist/releases/download/v0.0.1/Setlist-0.0.1.apk)
 
 [Installation instructions to share with a friend](docs/INSTALL.md). Android 8.0+;
 no computer or GitHub account needed. This is a directly distributed APK.
+
+## Screenshots
+
+Build a setlist, put the songs in playing order, then play straight through the
+set. Swipe or tap to turn pages; at the end of a song, the same gesture takes you
+into the next one.
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/phone-home.png" width="230" alt="Home screen on a phone listing saved setlists"><br><sub>Your setlists</sub></td>
+    <td align="center"><img src="docs/screenshots/phone-editor.png" width="230" alt="Setlist editor on a phone showing three songs in running order with drag handles"><br><sub>The running order</sub></td>
+    <td align="center"><img src="docs/screenshots/phone-reader.png" width="230" alt="Concert reader on a phone with the score and Next page button"><br><sub>On stage</sub></td>
+  </tr>
+</table>
+
+On a tablet, the same app gives the score more room:
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/tablet-home.png" width="380" alt="Home screen on a tablet in landscape"><br><sub>Home</sub></td>
+    <td align="center"><img src="docs/screenshots/tablet-editor.png" width="380" alt="Setlist editor on a tablet in landscape"><br><sub>Editor</sub></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><img src="docs/screenshots/tablet-reader-portrait.png" width="300" alt="Concert reader on a tablet in portrait with the full score page"><br><sub>Reader in portrait</sub></td>
+  </tr>
+</table>
 
 ## Features
 
