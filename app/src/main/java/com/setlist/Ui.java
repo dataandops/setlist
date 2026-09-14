@@ -35,6 +35,8 @@ final class Ui {
         return resource == 0 ? Math.round(value * c.getResources().getDisplayMetrics().density) : c.getResources().getDimensionPixelSize(resource);
     }
     static boolean compact(Context c) { return c.getResources().getConfiguration().smallestScreenWidthDp < 600; }
+    // Phones in landscape: too short to stack a header, a list and footer controls.
+    static boolean shortScreen(Context c) { return c.getResources().getConfiguration().screenHeightDp < 480; }
     // Phones step headings down one notch; body, caption and metadata sizes stay readable at full size.
     private static int typeSize(Context c, int size) {
         if (!compact(c)) return size;

@@ -16,6 +16,7 @@ import java.util.List;
 public final class SongLibraryActivity extends AppCompatActivity {
     private static final int PAGE_SIZE = 25;
     private int pageIndex;
+    private boolean pageScrolls;
     private Library library;
     private String target, source;
     private TextInputEditText search;
@@ -31,18 +32,24 @@ public final class SongLibraryActivity extends AppCompatActivity {
         source = saved == null ? null : saved.getString("source");
         pageIndex = saved == null ? 0 : Math.max(0, saved.getInt("page", 0));
         LinearLayout root = Ui.column(this); root.setBackgroundColor(Ui.BG); setContentView(root); Ui.insets(root);
-        LinearLayout page = Ui.column(this); Ui.pad(page, 16); root.addView(page, new LinearLayout.LayoutParams(-1, -1));
-        page.addView(Ui.quiet(this, "Back to setlist", R.drawable.ic_arrow_back, this::finish));
+        LinearLayout page = Ui.column(this); Ui.pad(page, 16);
+        // Short screens scroll the whole page so results aren't squeezed between the header and pagination.
+        pageScrolls = Ui.shortScreen(this);
+        if (pageScrolls) { scroll = new ScrollView(this); scroll.addView(page); root.addView(scroll, new LinearLayout.LayoutParams(-1, -1)); }
+        else root.addView(page, new LinearLayout.LayoutParams(-1, -1));
+        page.addView(Ui.quiet(this, "Back to setlist", R.drawable.ic_arrow_back, this::finish), new LinearLayout.LayoutParams(-2, -2));
         page.addView(Ui.heading(this, "Saved songs", Ui.HEADING)); Ui.gap(page, 8);
         page.addView(Ui.text(this, "Add to " + library.setName(target), Ui.CAPTION, Ui.MUTED)); Ui.gap(page, 16);
         TextInputLayout field = new TextInputLayout(this); field.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
         field.setHint("Search name or metadata"); field.setStartIconDrawable(R.drawable.ic_search); field.setEndIconMode(TextInputLayout.END_ICON_CLEAR_TEXT);
         search = new TextInputEditText(this); search.setSingleLine(true); field.addView(search); page.addView(field);
         filter = Ui.withIcon(Ui.button(this, "", false, this::chooseSource), R.drawable.ic_queue_music, false); page.addView(filter);
-        scroll = new ScrollView(this); results = Ui.column(this); scroll.addView(results); page.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1));
+        results = Ui.column(this);
+        if (pageScrolls) page.addView(results);
+        else { scroll = new ScrollView(this); scroll.addView(results); page.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1)); }
         pagination = Ui.row(this);
-        previousPage = Ui.withIcon(Ui.button(this, "Previous", false, () -> { pageIndex--; refresh(); }), R.drawable.ic_chevron_left, false);
-        nextPage = Ui.withIcon(Ui.button(this, "Next", false, () -> { pageIndex++; refresh(); }), R.drawable.ic_chevron_right, true);
+        previousPage = Ui.withIcon(Ui.button(this, "Previous", false, () -> { pageIndex--; refresh(); showResultsTop(); }), R.drawable.ic_chevron_left, false);
+        nextPage = Ui.withIcon(Ui.button(this, "Next", false, () -> { pageIndex++; refresh(); showResultsTop(); }), R.drawable.ic_chevron_right, true);
         previousPage.setContentDescription("Previous results page"); nextPage.setContentDescription("Next results page");
         Ui.weighted(pagination, previousPage);
         pageLabel = Ui.text(this, "", 12, Ui.MUTED); pageLabel.setGravity(android.view.Gravity.CENTER); Ui.pad(pageLabel, 8); pagination.addView(pageLabel);
@@ -63,6 +70,8 @@ public final class SongLibraryActivity extends AppCompatActivity {
             source = which == 0 ? null : sets.get(which - 1).id(); pageIndex = 0; dialog.dismiss(); refresh();
         }).setNegativeButton("Cancel", null).show();
     }
+    // When the page scrolls as a whole, jumping to the very top after Previous/Next would hide the new results.
+    private void showResultsTop() { if (pageScrolls) scroll.post(() -> scroll.smoothScrollTo(0, results.getTop())); }
     private void refresh() {
         filter.setText(source == null ? "All setlists" : library.setName(source)); results.removeAllViews();
         List<Models.Song> songs = library.searchSongs(source, search.getText().toString());
@@ -71,7 +80,7 @@ public final class SongLibraryActivity extends AppCompatActivity {
         pagination.setVisibility(songs.isEmpty() ? View.GONE : View.VISIBLE);
         previousPage.setEnabled(pageIndex > 0); nextPage.setEnabled(pageIndex + 1 < pages);
         pageLabel.setText("Page " + (pageIndex + 1) + " of " + pages);
-        scroll.scrollTo(0, 0);
+        if (!pageScrolls) scroll.scrollTo(0, 0);
         if (songs.isEmpty()) {
             boolean empty = library.songs().isEmpty();
             results.addView(Ui.emptyState(this, empty ? R.drawable.illustration_empty_set : R.drawable.ic_search,

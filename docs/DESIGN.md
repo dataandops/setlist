@@ -20,6 +20,8 @@ Setlist is an offline concert companion. Its two main tasks are assembling a run
 
 Phones (smallest width under 600 dp) use the compact scale in `values/dimens.xml` and `Ui.typeSize`; tablets use `values-sw600dp`.
 
+On short screens (under 480 dp tall, i.e. phones in landscape), Home and Saved songs scroll as one page. The setlist editor keeps its drag-to-reorder list and condenses instead: the set name joins the top row, and **Start setlist** joins the action buttons.
+
 Material 3 supplies dialogs, buttons and outlined inputs. Material Symbols Rounded supply interface glyphs. Fonts and vectors are packaged in the APK and work offline. See [attributions](THIRD_PARTY.md).
 
 The custom launcher mark combines a setlist sheet with piano keys. Adaptive foreground/background resources accommodate launcher masks; Android 13+ has a monochrome themed variant. The same mark is used in the app header.

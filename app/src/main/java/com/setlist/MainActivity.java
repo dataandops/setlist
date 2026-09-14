@@ -67,8 +67,8 @@ public final class MainActivity extends AppCompatActivity {
             new MaterialAlertDialogBuilder(this).setMessage(message).setPositiveButton("OK", null).show();
         }
     }
-    // Short screens (phones in landscape) can't fit the header, list and footer, so Home scrolls as one page.
-    private boolean homeScrolls() { return setId == null && getResources().getConfiguration().screenHeightDp < 480; }
+    // On short screens Home scrolls as one page; the editor keeps its drag list and condenses its header instead.
+    private boolean homeScrolls() { return setId == null && Ui.shortScreen(this); }
     private void disable(View view) {
         view.setEnabled(false);
         if (view instanceof ViewGroup group) for (int i = 0; i < group.getChildCount(); i++) disable(group.getChildAt(i));
@@ -102,17 +102,26 @@ public final class MainActivity extends AppCompatActivity {
         Ui.gap(content, 8); TextView footer = Ui.text(this, "No account. Your files stay yours.", 12, Ui.MUTED); footer.setGravity(Gravity.CENTER); content.addView(footer);
     }
     private void editor() {
+        boolean condensed = Ui.shortScreen(this);
+        entries = app.library.entries(setId);
         LinearLayout top = Ui.row(this);
         top.addView(Ui.quiet(this, "All setlists", R.drawable.ic_arrow_back, () -> { setId = null; refresh(); }), new LinearLayout.LayoutParams(-2, -2));
-        top.addView(new View(this), new LinearLayout.LayoutParams(0, 0, 1));
+        if (condensed) {
+            // Title shares the top row so the running order keeps most of the height.
+            TextView name = Ui.heading(this, app.library.setName(setId), Ui.TITLE); name.setSingleLine(true); name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            Ui.pad(name, 8); top.addView(name, new LinearLayout.LayoutParams(0, -2, 1));
+        } else top.addView(new View(this), new LinearLayout.LayoutParams(0, 0, 1));
         top.addView(Ui.quiet(this, "Options", R.drawable.ic_more_horiz, this::setOptions), new LinearLayout.LayoutParams(-2, -2)); content.addView(top);
-        Ui.gap(content, 16); content.addView(Ui.eyebrow(this, "THE RUNNING ORDER"));
-        Ui.gap(content, Ui.BODY); content.addView(Ui.heading(this, app.library.setName(setId), Ui.HEADING));
-        entries = app.library.entries(setId);
-        content.addView(Ui.text(this, entries.size() + " songs  ·  Hold a handle to reorder", Ui.CAPTION, Ui.MUTED)); Ui.gap(content, Ui.BODY);
+        if (!condensed) {
+            Ui.gap(content, 16); content.addView(Ui.eyebrow(this, "THE RUNNING ORDER"));
+            Ui.gap(content, Ui.BODY); content.addView(Ui.heading(this, app.library.setName(setId), Ui.HEADING));
+            content.addView(Ui.text(this, entries.size() + " songs  ·  Hold a handle to reorder", Ui.CAPTION, Ui.MUTED)); Ui.gap(content, Ui.BODY);
+        }
         LinearLayout actions = Ui.row(this);
         if (!entries.isEmpty()) Ui.weighted(actions, Ui.withIcon(Ui.button(this, "Import PDFs", false, () -> pick(PDFS, null)), R.drawable.ic_add, false));
         Ui.weighted(actions, Ui.withIcon(Ui.button(this, "Saved songs", false, this::addSaved), R.drawable.ic_library_music, false)); content.addView(actions);
+        Button start = Ui.withIcon(Ui.button(this, "Start setlist", true, () -> startConcert(0)), R.drawable.ic_play_arrow, false); start.setEnabled(!entries.isEmpty());
+        if (condensed) Ui.weighted(actions, start);
         Ui.gap(content, 8);
         if (entries.isEmpty()) {
             ScrollView emptyScroll = new ScrollView(this);
@@ -135,7 +144,7 @@ public final class MainActivity extends AppCompatActivity {
             });
             drag.attachToRecyclerView(list); content.addView(list, new LinearLayout.LayoutParams(-1, 0, 1));
         }
-        Button start = Ui.withIcon(Ui.button(this, "Start setlist", true, () -> startConcert(0)), R.drawable.ic_play_arrow, false); start.setEnabled(!entries.isEmpty()); content.addView(start);
+        if (!condensed) content.addView(start);
     }
     private void startConcert(int index) {
         startActivity(new Intent(this, ConcertActivity.class).putExtra("set", setId).putExtra("song", index));
