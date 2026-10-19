@@ -47,14 +47,19 @@ public class ConcertFlowTest {
         scenario = ActivityScenario.launch(new Intent(app, ConcertActivity.class).putExtra("set", set).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         waitFor(By.desc("First song, page 1 of 3"));
     }
+    // Page-turn pedals send Page Up/Down; phones have no on-screen page buttons.
+    private void pedal(boolean forward, String expected) {
+        device.pressKeyCode(forward ? android.view.KeyEvent.KEYCODE_PAGE_DOWN : android.view.KeyEvent.KEYCODE_PAGE_UP);
+        if (expected != null) waitFor(By.desc(expected));
+    }
     @Test public void pageTurnsAdvanceToNextSongAndFinish() {
-        openReader(); click("Next page"); waitFor(By.desc("First song, page 2 of 3"));
-        click("Next page"); waitFor(By.desc("First song, page 3 of 3"));
-        click("Next song"); waitFor(By.desc("Second song, page 1 of 2"));
-        click("Previous"); waitFor(By.desc("First song, page 3 of 3"));
-        click("Next song"); waitFor(By.desc("Second song, page 1 of 2"));
-        click("Next page"); waitFor(By.desc("Second song, page 2 of 2"));
-        device.findObject(By.desc("Finish setlist")).click(); waitFor(By.text("Set complete"));
+        openReader(); pedal(true, "First song, page 2 of 3");
+        pedal(true, "First song, page 3 of 3");
+        pedal(true, "Second song, page 1 of 2");
+        pedal(false, "First song, page 3 of 3");
+        pedal(true, "Second song, page 1 of 2");
+        pedal(true, "Second song, page 2 of 2");
+        pedal(true, null); waitFor(By.text("Set complete"));
         click("Play again"); waitFor(By.desc("First song, page 1 of 3"));
     }
     private void swipeScore(boolean forward, String current, String expected) {
@@ -82,34 +87,64 @@ public class ConcertFlowTest {
     }
     @Test public void tapsAndVerticalDragsDoNotTurnPages() {
         openReader(); android.graphics.Rect bounds = waitFor(By.desc("First song, page 1 of 3")).getVisibleBounds();
-        device.click(bounds.centerX(), bounds.centerY());
         device.swipe(bounds.centerX(), bounds.bottom - bounds.height() / 4, bounds.centerX(), bounds.top + bounds.height() / 4, 30);
         device.swipe(bounds.centerX(), bounds.centerY(), bounds.centerX() + 10, bounds.centerY(), 10);
         device.waitForIdle(); waitFor(By.desc("First song, page 1 of 3"));
     }
+    @Test public void tapTogglesFullScreenAndKeepsPage() {
+        openReader(); waitFor(By.text("Setlist"));
+        android.graphics.Rect bounds = waitFor(By.desc("First song, page 1 of 3")).getVisibleBounds();
+        device.click(bounds.centerX(), bounds.centerY());
+        assertTrue("Header hides", device.wait(Until.gone(By.text("Setlist")), 3000));
+        assertFalse(device.hasObject(By.text("Play MP3")));
+        android.graphics.Rect full = waitFor(By.desc("First song, page 1 of 3")).getVisibleBounds();
+        assertTrue("Score grows in full screen", full.height() > bounds.height());
+        swipeScore(true, "First song, page 1 of 3", "First song, page 2 of 3");
+        full = waitFor(By.desc("First song, page 2 of 3")).getVisibleBounds();
+        device.click(full.centerX(), full.centerY()); waitFor(By.text("Setlist")); waitFor(By.text("Play MP3"));
+        waitFor(By.desc("First song, page 2 of 3"));
+    }
+    @Test public void zoomedScorePansInsteadOfTurning() {
+        openReader(); android.graphics.Rect bounds = waitFor(By.desc("First song, page 1 of 3")).getVisibleBounds();
+        UiObject2 score = waitFor(By.desc("First song, page 1 of 3"));
+        score.pinchOpen(0.8f, 400); device.waitForIdle();
+        // While zoomed, a horizontal drag moves around the page.
+        device.swipe(bounds.right - bounds.width() / 4, bounds.centerY(), bounds.left + bounds.width() / 4, bounds.centerY(), 30);
+        device.waitForIdle(); waitFor(By.desc("First song, page 1 of 3"));
+        // A pedal still turns, and the next page starts at the full-page view.
+        pedal(true, "First song, page 2 of 3");
+        swipeScore(true, "First song, page 2 of 3", "First song, page 3 of 3");
+    }
     @Test public void scoreMenuReturnsDirectlyHome() {
         scenario = ActivityScenario.launch(MainActivity.class);
-        waitFor(By.desc("Open setlist Flow test set")).click(); click("Start setlist");
+        waitFor(By.desc("Open setlist Flow test set")).click(); waitFor(By.desc("Song 1: First song")).click();
         waitFor(By.desc("First song, page 1 of 3")); click("Play MP3"); waitFor(By.text("Pause"));
         click("Setlist"); click("Home");
         waitFor(By.text("Your next great set.")); waitFor(By.desc("Open setlist Flow test set"));
         assertFalse(device.hasObject(By.desc("First song, page 1 of 3")));
-        waitFor(By.desc("Open setlist Flow test set")).click(); click("Start setlist");
+        waitFor(By.desc("Open setlist Flow test set")).click(); waitFor(By.desc("Song 1: First song")).click();
         waitFor(By.desc("First song, page 1 of 3")); waitFor(By.text("Play MP3"));
+    }
+    @Test public void tappingASongOpensItsScoreAndHoldingOpensOptions() {
+        scenario = ActivityScenario.launch(MainActivity.class);
+        waitFor(By.desc("Open setlist Flow test set")).click();
+        assertFalse(device.hasObject(By.text("Start setlist")));
+        waitFor(By.desc("Song 2: Second song")).longClick(); waitFor(By.text("Rename song")); device.pressBack();
+        waitFor(By.desc("Song 2: Second song")).click(); waitFor(By.desc("Second song, page 1 of 2"));
     }
     @Test public void setlistPickerJumpsAndRecreationKeepsPage() {
         openReader(); click("Setlist"); waitFor(By.textContains("02  Second song")).click();
-        waitFor(By.desc("Second song, page 1 of 2")); click("Next page"); waitFor(By.desc("Second song, page 2 of 2"));
+        waitFor(By.desc("Second song, page 1 of 2")); pedal(true, "Second song, page 2 of 2");
         scenario.recreate(); waitFor(By.desc("Second song, page 2 of 2"));
     }
     @Test public void rotationPreservesScoreInPortraitAndLandscape() throws Exception {
-        device.setOrientationNatural(); openReader(); click("Next page"); waitFor(By.desc("First song, page 2 of 3"));
+        device.setOrientationNatural(); openReader(); pedal(true, "First song, page 2 of 3");
         boolean naturalLandscape = device.getDisplayWidth() > device.getDisplayHeight();
         device.setOrientationLeft(); waitForOrientation(!naturalLandscape); assertAdaptiveLayout(!naturalLandscape);
-        waitFor(By.desc("First song, page 2 of 3")); click("Next page"); waitFor(By.desc("First song, page 3 of 3"));
+        waitFor(By.desc("First song, page 2 of 3")); pedal(true, "First song, page 3 of 3");
         device.setOrientationNatural(); waitForOrientation(naturalLandscape); assertAdaptiveLayout(naturalLandscape);
         waitFor(By.desc("First song, page 3 of 3"));
-        click("Next song"); waitFor(By.desc("Second song, page 1 of 2"));
+        pedal(true, "Second song, page 1 of 2");
     }
     private void assertAdaptiveLayout(boolean landscape) {
         scenario.onActivity(activity -> {
@@ -134,7 +169,7 @@ public class ConcertFlowTest {
         openReader(); click("Play MP3"); waitFor(By.text("Pause"));
         click("Pause"); waitFor(By.text("Play MP3"));
         click("Play MP3"); waitFor(By.text("Pause"));
-        waitFor(By.desc("Skip to next song: Second song")).click(); waitFor(By.desc("Second song, page 1 of 2"));
+        click("Setlist"); waitFor(By.textContains("02  Second song")).click(); waitFor(By.desc("Second song, page 1 of 2"));
         assertFalse(device.hasObject(By.text("Pause")));
         click("Setlist"); waitFor(By.textContains("01  First song")).click();
         waitFor(By.text("Play MP3")); assertFalse(device.hasObject(By.text("Pause")));
@@ -142,9 +177,10 @@ public class ConcertFlowTest {
     @Test public void missingPdfCanBeSkippedWithoutDisplayingWrongSong() {
         assertTrue(first.delete());
         scenario = ActivityScenario.launch(new Intent(app, ConcertActivity.class).putExtra("set", set).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        waitFor(By.textContains("Cannot open this score"));
+        android.graphics.Rect bounds = waitFor(By.textContains("Cannot open this score")).getVisibleBounds();
         assertFalse(device.hasObject(By.desc("First song, page 1 of 3")));
-        waitFor(By.desc("Skip to next song: Second song")).click(); waitFor(By.desc("Second song, page 1 of 2"));
+        device.swipe(bounds.right - bounds.width() / 4, bounds.centerY(), bounds.left + bounds.width() / 4, bounds.centerY(), 30);
+        waitFor(By.desc("Second song, page 1 of 2"));
     }
     @Test public void savedSongsPaginationResetsForSearchAndSetlistFilter() {
         String source = library.createSet("Paged source");
@@ -189,7 +225,7 @@ public class ConcertFlowTest {
         assertTrue(handle.dragTo(firstBounds.centerX(), firstBounds.centerY() - 20, 40));
         device.waitForIdle();
         assertEquals("Second song", library.entries(set).get(0).song().title());
-        scenario.recreate(); waitFor(By.desc("Song 1: Second song. Options"));
+        scenario.recreate(); waitFor(By.desc("Song 1: Second song"));
     }
     @Test @androidx.test.filters.SdkSuppress(minSdkVersion = 29)
     public void systemPickerImportsMultipleOriginalFilesWithPersistentAccess() throws Exception {
@@ -210,7 +246,7 @@ public class ConcertFlowTest {
                 }
                 values.clear(); values.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0); resolver.update(uri, values, null, null);
             }
-            scenario = ActivityScenario.launch(MainActivity.class); waitFor(By.desc("Open setlist Flow test set")).click(); click("Import PDFs");
+            scenario = ActivityScenario.launch(MainActivity.class); waitFor(By.desc("Open setlist Flow test set")).click(); click("Import PDFs"); click("Choose files");
             waitFor(By.text(names[0])).longClick(); waitFor(By.text(names[1])).click();
             UiObject2 confirm = device.wait(Until.findObject(By.res(java.util.regex.Pattern.compile(".*:id/action_menu_select"))), 3000);
             if (confirm == null) confirm = device.wait(Until.findObject(By.text(java.util.regex.Pattern.compile("Open|Select", java.util.regex.Pattern.CASE_INSENSITIVE))), 3000);
@@ -225,7 +261,7 @@ public class ConcertFlowTest {
                 assertTrue(entry.song().pdf().startsWith("content://"));
                 assertTrue(resolver.getPersistedUriPermissions().stream().anyMatch(permission -> permission.isReadPermission() && permission.getUri().toString().equals(entry.song().pdf())));
             }
-            scenario.recreate(); waitFor(By.desc("Song 3: Setlist import one. Options"));
+            scenario.recreate(); waitFor(By.desc("Song 3: Setlist import one"));
         } finally {
             for (Uri uri : published) resolver.delete(uri, null, null);
         }

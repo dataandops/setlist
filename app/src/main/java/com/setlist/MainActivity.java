@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class MainActivity extends AppCompatActivity {
-    private static final int PDFS = 10, AUDIO = 11, REPLACE = 12;
+    private static final int PDFS = 10, AUDIO = 11, REPLACE = 12, FOLDER = 13;
     private SetlistApp app;
     private String setId, pendingSongId, pendingSetId;
     private LinearLayout content;
@@ -115,18 +115,16 @@ public final class MainActivity extends AppCompatActivity {
         if (!condensed) {
             Ui.gap(content, 16); content.addView(Ui.eyebrow(this, "THE RUNNING ORDER"));
             Ui.gap(content, Ui.BODY); content.addView(Ui.heading(this, app.library.setName(setId), Ui.HEADING));
-            content.addView(Ui.text(this, entries.size() + " songs  ·  Hold a handle to reorder", Ui.CAPTION, Ui.MUTED)); Ui.gap(content, Ui.BODY);
+            content.addView(Ui.text(this, entries.size() + " songs  ·  Tap to open  ·  Hold for options", Ui.CAPTION, Ui.MUTED)); Ui.gap(content, Ui.BODY);
         }
         LinearLayout actions = Ui.row(this);
-        if (!entries.isEmpty()) Ui.weighted(actions, Ui.withIcon(Ui.button(this, "Import PDFs", false, () -> pick(PDFS, null)), R.drawable.ic_add, false));
+        if (!entries.isEmpty()) Ui.weighted(actions, Ui.withIcon(Ui.button(this, "Import PDFs", false, this::importChoice), R.drawable.ic_add, false));
         Ui.weighted(actions, Ui.withIcon(Ui.button(this, "Saved songs", false, this::addSaved), R.drawable.ic_library_music, false)); content.addView(actions);
-        Button start = Ui.withIcon(Ui.button(this, "Start setlist", true, () -> startConcert(0)), R.drawable.ic_play_arrow, false); start.setEnabled(!entries.isEmpty());
-        if (condensed) Ui.weighted(actions, start);
         Ui.gap(content, 8);
         if (entries.isEmpty()) {
             ScrollView emptyScroll = new ScrollView(this);
             emptyScroll.addView(Ui.emptyState(this, R.drawable.illustration_empty_set, "Every set starts with a song",
-                "Choose your PDF charts from device storage, or reuse a saved song. Your original files stay where they are.", "Import PDFs", () -> pick(PDFS, null)));
+                "Choose your PDF charts from device storage, or reuse a saved song. Your original files stay where they are.", "Import PDFs", this::importChoice));
             content.addView(emptyScroll, new LinearLayout.LayoutParams(-1, 0, 1));
         } else {
             RecyclerView list = new RecyclerView(this); list.setLayoutManager(new LinearLayoutManager(this));
@@ -138,13 +136,14 @@ public final class MainActivity extends AppCompatActivity {
                     Models.move(entries, a, b); app.library.reorder(setId, entries); adapter.notifyItemMoved(a, b); return true;
                 }
                 @Override public void onSwiped(RecyclerView.ViewHolder holder, int direction) {}
+                // Holding a row opens its options; dragging starts from the handle.
+                @Override public boolean isLongPressDragEnabled() { return false; }
                 @Override public void clearView(RecyclerView rv, RecyclerView.ViewHolder holder) {
                     super.clearView(rv, holder); adapter.notifyItemRangeChanged(0, entries.size());
                 }
             });
             drag.attachToRecyclerView(list); content.addView(list, new LinearLayout.LayoutParams(-1, 0, 1));
         }
-        if (!condensed) content.addView(start);
     }
     private void startConcert(int index) {
         startActivity(new Intent(this, ConcertActivity.class).putExtra("set", setId).putExtra("song", index));
@@ -162,7 +161,7 @@ public final class MainActivity extends AppCompatActivity {
     private void songOptions(int position) {
         if (position < 0 || position >= entries.size()) return;
         Models.Entry entry = entries.get(position); Models.Song song = entry.song();
-        String[] options = {"Open in concert", "Rename song", song.audio() == null ? "Attach MP3" : "Replace audio", "Locate / replace PDF", "Move up", "Move down", "Remove from setlist", "Song details", "Edit metadata"};
+        String[] options = {"Open score", "Rename song", song.audio() == null ? "Attach MP3" : "Replace audio", "Locate / replace PDF", "Move up", "Move down", "Remove from setlist", "Song details", "Edit metadata"};
         new MaterialAlertDialogBuilder(this).setTitle(song.title()).setItems(options, (d, choice) -> {
             switch (choice) {
                 case 0 -> startConcert(position);
@@ -193,8 +192,17 @@ public final class MainActivity extends AppCompatActivity {
             action.accept(input.getText().toString()); dialog.dismiss();
         })); dialog.show();
     }
+    private void importChoice() {
+        new MaterialAlertDialogBuilder(this).setTitle("Import PDFs").setItems(new String[]{"Choose files", "Choose a folder"}, (d, choice) -> {
+            if (choice == 0) pick(PDFS, null); else pick(FOLDER, null);
+        }).show();
+    }
     private void pick(int request, String songId) {
         pendingSongId = songId; pendingSetId = setId;
+        if (request == FOLDER) {
+            startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION), request);
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT).setType(request == AUDIO ? "audio/*" : "application/pdf");
         intent.addCategory(Intent.CATEGORY_OPENABLE); intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, request == PDFS);
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
@@ -203,12 +211,19 @@ public final class MainActivity extends AppCompatActivity {
     }
     @Override protected void onActivityResult(int request, int result, Intent data) {
         super.onActivityResult(request, result, data);
-        if (result != RESULT_OK || data == null || (request != PDFS && request != AUDIO && request != REPLACE)) return;
+        if (result != RESULT_OK || data == null || (request != PDFS && request != AUDIO && request != REPLACE && request != FOLDER)) return;
+        if (request == FOLDER) { if (data.getData() != null) listFolder(data.getData()); return; }
         ArrayList<Uri> uris = new ArrayList<>(); ClipData clip = data.getClipData();
         if (clip != null) for (int i = 0; i < clip.getItemCount(); i++) uris.add(clip.getItemAt(i).getUri());
         else if (data.getData() != null) uris.add(data.getData());
         String targetSet = pendingSetId, targetSong = pendingSongId;
         app.work(() -> {
+            // Pickers return selections in tap order; import charts in the order people number them.
+            if (request == PDFS) {
+                java.util.Map<Uri, String> names = new java.util.HashMap<>();
+                for (Uri uri : uris) names.put(uri, app.library.displayName(uri));
+                uris.sort((a, b) -> Models.NATURAL.compare(names.get(a), names.get(b)));
+            }
             int success = 0; List<String> failures = new ArrayList<>();
             for (Uri uri : uris) {
                 try {
@@ -224,6 +239,62 @@ public final class MainActivity extends AppCompatActivity {
             return success + (request == PDFS ? " PDF(s) added." : " file(s) linked.") + (failures.isEmpty() ? "" : "\n\n" + String.join("\n", failures));
         });
     }
+    private record FolderPdf(String name, Uri uri) {}
+    /** Lists a chosen folder's PDFs in natural order, so "2 Blues" comes before "10 Ballad". */
+    private void listFolder(Uri tree) {
+        String targetSet = pendingSetId;
+        app.io.execute(() -> {
+            List<FolderPdf> found = new ArrayList<>(); String error = null;
+            try {
+                getContentResolver().takePersistableUriPermission(tree, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                Uri children = android.provider.DocumentsContract.buildChildDocumentsUriUsingTree(tree, android.provider.DocumentsContract.getTreeDocumentId(tree));
+                String[] columns = {android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID, android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME, android.provider.DocumentsContract.Document.COLUMN_MIME_TYPE};
+                try (android.database.Cursor c = getContentResolver().query(children, columns, null, null, null)) {
+                    while (c != null && c.moveToNext()) {
+                        String name = c.getString(1) == null ? "" : c.getString(1);
+                        if ("application/pdf".equals(c.getString(2)) || name.toLowerCase(java.util.Locale.ROOT).endsWith(".pdf"))
+                            found.add(new FolderPdf(name, android.provider.DocumentsContract.buildDocumentUriUsingTree(tree, c.getString(0))));
+                    }
+                }
+                found.sort((a, b) -> Models.NATURAL.compare(a.name(), b.name()));
+            } catch (Exception e) { error = "Cannot read this folder. Choose another folder on this device."; }
+            String message = error;
+            runOnUiThread(() -> { if (!isFinishing()) chooseFromFolder(tree, targetSet, found, message); });
+        });
+    }
+    private void chooseFromFolder(Uri tree, String targetSet, List<FolderPdf> found, String error) {
+        if (error != null || found.isEmpty()) {
+            if (error == null) releaseFolder(tree);
+            new MaterialAlertDialogBuilder(this).setMessage(error != null ? error : "No PDFs in this folder.").setPositiveButton("OK", null).show(); return;
+        }
+        String[] names = new String[found.size()]; boolean[] checked = new boolean[found.size()];
+        for (int i = 0; i < names.length; i++) names[i] = found.get(i).name().replaceFirst("(?i)\\.pdf$", "");
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this).setTitle("Choose charts")
+            .setMultiChoiceItems(names, checked, (d, which, isChecked) -> checked[which] = isChecked)
+            .setNegativeButton("Cancel", (d, which) -> releaseFolder(tree)).setNeutralButton("Select all", null)
+            .setPositiveButton("Add", (d, which) -> {
+                List<Uri> chosen = new ArrayList<>();
+                for (int i = 0; i < checked.length; i++) if (checked[i]) chosen.add(found.get(i).uri());
+                if (chosen.isEmpty()) { releaseFolder(tree); return; }
+                app.work(() -> {
+                    int success = 0; List<String> failures = new ArrayList<>();
+                    for (Uri uri : chosen) {
+                        try { app.library.importPdf(targetSet, uri); success++; }
+                        catch (Exception e) { failures.add(app.library.displayName(uri) + ": " + (e.getMessage() == null ? "Could not open file." : e.getMessage())); }
+                    }
+                    return success + " PDF(s) added." + (failures.isEmpty() ? "" : "\n\n" + String.join("\n", failures));
+                });
+            }).create();
+        dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+            boolean all = true; for (boolean value : checked) all &= value;
+            for (int i = 0; i < checked.length; i++) { checked[i] = !all; dialog.getListView().setItemChecked(i, !all); }
+            ((Button) v).setText(all ? "Select all" : "Clear all");
+        }));
+        dialog.show();
+    }
+    private void releaseFolder(Uri tree) {
+        try { getContentResolver().releasePersistableUriPermission(tree, Intent.FLAG_GRANT_READ_URI_PERMISSION); } catch (SecurityException ignored) { /* Already released. */ }
+    }
     private final class SongAdapter extends RecyclerView.Adapter<SongHolder> {
         @Override public SongHolder onCreateViewHolder(ViewGroup parent, int type) {
             LinearLayout row = Ui.row(MainActivity.this); Ui.card(row);
@@ -237,8 +308,11 @@ public final class MainActivity extends AppCompatActivity {
         @Override public void onBindViewHolder(SongHolder h, int position) {
             Models.Song song = entries.get(position).song(); h.number.setText(String.format(java.util.Locale.US, "%02d", position + 1));
             h.title.setText(song.title()); h.subtitle.setText((song.metadataLine().isEmpty() ? "" : song.metadataLine() + " · ") + getString(song.audio() == null ? R.string.song_pdf : R.string.song_audio, song.pages()));
-            h.itemView.setContentDescription("Song " + (position + 1) + ": " + song.title() + ". Options"); h.itemView.setFocusable(true);
-            h.itemView.setOnClickListener(v -> songOptions(h.getBindingAdapterPosition()));
+            h.itemView.setContentDescription("Song " + (position + 1) + ": " + song.title()); h.itemView.setFocusable(true);
+            h.itemView.setOnClickListener(v -> { int at = h.getBindingAdapterPosition(); if (at >= 0) startConcert(at); });
+            h.itemView.setOnLongClickListener(v -> { songOptions(h.getBindingAdapterPosition()); return true; });
+            androidx.core.view.ViewCompat.replaceAccessibilityAction(h.itemView, androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK, "Open score", null);
+            androidx.core.view.ViewCompat.replaceAccessibilityAction(h.itemView, androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK, "Song options", null);
             h.handle.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES); h.handle.setContentDescription("Reorder " + song.title()); h.handle.setFocusable(true);
             h.handle.setOnLongClickListener(v -> { drag.startDrag(h); return true; });
             h.handle.setOnClickListener(v -> songOptions(h.getBindingAdapterPosition()));
