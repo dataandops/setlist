@@ -20,7 +20,7 @@ Setlist is an offline concert companion. Its two main tasks are assembling a run
 
 Phones (smallest width under 600 dp) use the compact scale in `values/dimens.xml` and `Ui.typeSize`; tablets use `values-sw600dp`.
 
-On short screens (under 480 dp tall, i.e. phones in landscape), Home and Saved songs scroll as one page. The setlist editor keeps its drag-to-reorder list and condenses instead: the set name joins the top row, and **Start setlist** joins the action buttons.
+On short screens (under 480 dp tall, i.e. phones in landscape), Home and Saved songs scroll as one page. The setlist editor keeps its drag-to-reorder list and condenses instead: the set name joins the top row, and the action buttons share one row.
 
 Material 3 supplies dialogs, buttons and outlined inputs. Material Symbols Rounded supply interface glyphs. Fonts and vectors are packaged in the APK and work offline. See [attributions](THIRD_PARTY.md).
 
@@ -28,9 +28,9 @@ The custom launcher mark combines a setlist sheet with piano keys. Adaptive fore
 
 ## Components and layouts
 
-Use `Ui.java`, `colors.xml`, `dimens.xml` and the Material theme as the shared source of truth. Primary buttons are amber; supporting actions use tonal surfaces or quiet text. Buttons have pressed, disabled and focus states. Song cards show title first, then artist/key/tempo and file details. Drag handles also offer menu-based movement.
+Use `Ui.java`, `colors.xml`, `dimens.xml` and the Material theme as the shared source of truth. Primary buttons are amber; supporting actions use tonal surfaces or quiet text. Buttons have pressed, disabled and focus states. Song cards show title first, then artist/key/tempo and file details. Tapping a card opens its score; holding it opens song options. Drag handles also offer menu-based movement.
 
-The editor uses a single column, capped at 960 dp. Reader controls sit below the PDF in portrait. In landscape at widths of at least 600 dp, they move into a 224 dp sidebar. The sidebar card wraps its contents and scrolls on short screens. Next page is primary, Previous is quiet, the upcoming song has a separate title, and audio occupies its own group. Rotating preserves the active song and page, and re-renders the PDF at its original aspect ratio.
+The editor uses a single column, capped at 960 dp. The reader header is one slim row: the Setlist menu, then a single-line title and progress. On phones and in portrait, there are no page buttons below the PDF — swipes, taps and pedals turn pages — and only the backing-track bar appears below when a song has an MP3. In landscape at widths of at least 600 dp, page controls sit in a 224 dp sidebar beside the page. The sidebar card wraps its contents and scrolls on short screens. Next page is primary, Previous is quiet, the upcoming song has a separate title, and audio occupies its own group. Rotating preserves the active song and page, and re-renders the PDF at its original aspect ratio.
 
 Empty states share an original vector score illustration, centered heading, short explanation and one primary action. Empty home invites the first setlist; an empty set invites importing PDFs; an empty library explains how songs become reusable. No search results offers a single action to clear the query and setlist filter. Decorative illustrations are excluded from accessibility traversal.
 
@@ -46,6 +46,6 @@ The debug-only `DesignSystemActivity` displays the actual shared components. Lau
 
 [Tablet editor](screenshots/tablet-editor.png) · [Landscape reader](screenshots/tablet-reader.png) · [Portrait reader](screenshots/tablet-reader-portrait.png)
 
-Swipe left on the score to advance a page; swipe right to go back. At a song boundary, swiping continues to the adjacent song. The last page opens the set-complete dialog. Taps, short movements and vertical drags do not turn pages. Buttons remain available.
+Swipe left on the score to advance a page; swipe right to go back. Pages slide briefly as they turn. At a song boundary, swiping continues to the adjacent song. The last page opens the set-complete dialog. Short movements and vertical drags do not turn pages. Tap the score to go full screen (header, controls and system bars hide); tap again to bring them back. Pinch or double-tap to zoom; while zoomed, drag to move around the page, and pinch out or double-tap to return. Page turns reset the zoom. If a PDF cannot open, swiping skips to the adjacent song.
 
 Saved-song results show 25 songs per page, with Previous/Next controls, a result range and a page count. Search and setlist-filter changes return to page one; rotation preserves the selected page.

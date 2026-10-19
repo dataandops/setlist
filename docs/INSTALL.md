@@ -15,17 +15,18 @@ back to the person who shared the app.
 
 ## Try it
 
-- Tap **Try a sample set**, open it, then **Start setlist**.
-- Use **Next page** to turn pages. At the end of a song it becomes **Next song**.
+- Tap **Try a sample set**, open it, then tap a song to open its score.
+- Swipe left to turn pages. At the end of a song, swiping continues to the next one.
+- Tap the score for full screen. Pinch to zoom.
 - Tap **Setlist** to jump to another song or return to editing.
 
 ## Add your music
 
 1. Save your PDFs on the Android device, such as in **Downloads**.
 2. Tap **New setlist**, enter its name, then **Import PDFs**.
-3. Long-press one PDF, select any others, then tap **Open** or **Select**.
+3. Choose **Choose files** to long-press PDFs in the system picker, or **Choose a folder** to tick charts from a list sorted by chart number (2 before 10 before 101). Either way, songs are added in number order.
 4. Hold a song's **≡** handle to drag it into playing order.
-5. Tap a song for options: rename, attach an MP3, or remove it from the set.
+5. Tap a song to open its score. Hold a song for options: rename, attach an MP3, or remove it from the set.
 
 Your PDFs and MP3s stay in their original locations. Setlist remembers permission
 to read them and does not make permanent copies. If you move a PDF, use the song's
@@ -35,7 +36,7 @@ For future updates, install the new APK over this one to keep your saved setlist
 Uninstalling the app removes its saved setlists and file links; original music
 files remain on your device.
 
-Swipe left on the score to advance a page; swipe right to go back. At a song boundary, swiping continues to the adjacent song. The last page opens the set-complete dialog. Taps, short movements and vertical drags do not turn pages. Buttons remain available.
+Swipe left on the score to advance a page; swipe right to go back. Pages slide briefly as they turn. At a song boundary, swiping continues to the adjacent song. The last page opens the set-complete dialog. Short movements and vertical drags do not turn pages. Tap the score to go full screen (header, controls and system bars hide); tap again to bring them back. Pinch or double-tap to zoom; while zoomed, drag to move around the page, and pinch out or double-tap to return. Page turns reset the zoom. If a PDF cannot open, swiping skips to the adjacent song.
 
 From a score, tap **Setlist → Home** to return to all setlists. **Edit setlist** returns to the current running order; **Back to score** resumes viewing. Leaving for Home stops audio.
 

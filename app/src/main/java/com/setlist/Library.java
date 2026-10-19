@@ -72,9 +72,10 @@ public final class Library extends SQLiteOpenHelper {
     }
     public List<Models.Song> songs() {
         List<Models.Song> result = new ArrayList<>();
-        try (Cursor c = getReadableDatabase().rawQuery("SELECT id,title,pdf,audio,pages,artist,musical_key,bpm,notes FROM songs ORDER BY title COLLATE NOCASE", null)) {
+        try (Cursor c = getReadableDatabase().rawQuery("SELECT id,title,pdf,audio,pages,artist,musical_key,bpm,notes FROM songs", null)) {
             while (c.moveToNext()) result.add(readSong(c, 0));
         }
+        result.sort((a, b) -> Models.NATURAL.compare(a.title(), b.title()));
         return result;
     }
     private static Models.Song readSong(Cursor c, int offset) {

@@ -41,6 +41,15 @@ public class LibraryTest {
         assertEquals(song.id(), library.entries(set).get(0).song().id());
         library.deleteSet(set); assertTrue(source.exists()); assertEquals(1, library.songs().size());
     }
+    @Test public void chartNumbersSortTheWayPeopleCount() throws Exception {
+        List<String> names = new ArrayList<>(List.of("101 Coda", "2 Blues", "18 Dreamsville", "10 Ballad", "1 Opener", "47 Doin' Basie's Thing", "208 Encore", "b side", "A side"));
+        names.sort(Models.NATURAL);
+        assertEquals(List.of("1 Opener", "2 Blues", "10 Ballad", "18 Dreamsville", "47 Doin' Basie's Thing", "101 Coda", "208 Encore", "A side", "b side"), names);
+        String set = library.createSet("Book");
+        for (String title : new String[]{"125 Late", "3 Early", "22 Middle"}) library.renameSong(library.importPdf(set, Uri.fromFile(source)).id(), title);
+        List<String> saved = new ArrayList<>(); for (Models.Song song : library.songs()) saved.add(song.title());
+        assertEquals(List.of("3 Early", "22 Middle", "125 Late"), saved);
+    }
     @Test public void reorderAndRemoveKeepStableUniqueEntries() throws Exception {
         String set = library.createSet("Gig"); Models.Song song = library.importPdf(set, Uri.fromFile(source));
         library.addSong(set, song.id()); library.addSong(set, song.id());

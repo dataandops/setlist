@@ -11,10 +11,10 @@ scripts/android.sh install emulator-5554
 ```
 
 The app opens in the emulator. Choose **Try a sample set**, open the new set,
-then **Start setlist**. It contains three original three-page charts.
+then tap a song. It contains three original three-page charts.
 
 To use your own PDFs, drag files from Finder onto the emulator. Android places
-them in Downloads. In the app, create a setlist, choose **Import PDFs**, navigate
+them in Downloads. In the app, create a setlist, choose **Import PDFs** → **Choose files**, navigate
 to Downloads, long-press one file, select others, then choose **Open** or **Select**. This grants
 read access to those original files; the app does not keep permanent copies.
 
@@ -24,10 +24,10 @@ Alternatively, use Android Debug Bridge:
 .tools/android-sdk/platform-tools/adb -s emulator-5554 push /path/to/score.pdf /sdcard/Download/
 ```
 
-Open a song's options to rename it, attach an MP3, move it with accessible controls,
-or locate a moved PDF. In concert mode, use **Next page**, **Previous**, or **Setlist**
-to jump to another song. At a song boundary, the primary button becomes **Next song**.
-The lower control also allows skipping the rest of a song. Arrow keys, Page Up/Down,
+Tap a song to open its score. Hold it for options to rename it, attach an MP3, move it with accessible controls,
+or locate a moved PDF. In concert mode, swipe to turn pages, tap for full screen, pinch to zoom, or use **Setlist**
+to jump to another song. On a landscape tablet, the sidebar also has **Next page**, **Previous** and
+**Skip to song**. Arrow keys, Page Up/Down,
 and Space work for keyboard/pedal devices that send those key events.
 
 Audio starts only when you press Play. Pause and seek are available. Changing
