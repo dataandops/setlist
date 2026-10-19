@@ -9,8 +9,8 @@ scripts/android.sh release
 
 This builds/lints the release variant, then signs and verifies it with Android's
 `apksigner`. Outputs are in the ignored `dist/` directory: the APK, SHA-256 checksum,
-and forwardable install guide. The signing helper currently names version 0.0.1;
-update it alongside `versionCode`/`versionName` for the next release.
+and forwardable install guide. The APK is named from `versionName`; bump it and
+`versionCode` in `app/build.gradle` for each release.
 
 The signing identity is generated once in `.tools/signing/` and reused. That
 directory and all keystores are ignored by Git and restricted to the local user.
