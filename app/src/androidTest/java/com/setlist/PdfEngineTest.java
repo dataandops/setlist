@@ -61,6 +61,43 @@ public class PdfEngineTest {
         SystemClock.sleep(300);
         assertTrue(load(song, 1).cacheHit());
     }
+    private static void assertRed(String where, int pixel) {
+        assertTrue(where + " should be red, was #" + Integer.toHexString(pixel),
+                android.graphics.Color.red(pixel) > 200 && android.graphics.Color.green(pixel) < 80 && android.graphics.Color.blue(pixel) < 80);
+    }
+    private static void assertWhite(String where, int pixel) {
+        assertTrue(where + " should be white, was #" + Integer.toHexString(pixel),
+                android.graphics.Color.red(pixel) > 230 && android.graphics.Color.green(pixel) > 230 && android.graphics.Color.blue(pixel) > 230);
+    }
+    @Test public void markupAnnotationsAreRendered() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        File annotated = TestScores.annotatedPdf(context, "Annotated score");
+        try {
+            Models.Song marked = new Models.Song("marked", "Annotated score", Uri.fromFile(annotated).toString(), null, 1);
+            // Fitted page: the box centre is PDF (200, 500), which is (200, 292) from the top-left of a 612x792 page.
+            android.graphics.Bitmap page = load(marked, 0).bitmap();
+            int w = page.getWidth(), h = page.getHeight();
+            assertRed("Markup centre", page.getPixel(Math.round(200f / 612 * w), Math.round(292f / 792 * h)));
+            assertWhite("Paper outside markup", page.getPixel(Math.round(50f / 612 * w), Math.round(50f / 792 * h)));
+
+            // Zoomed detail at 2x with no pan uses the same geometry as PdfSwipeView.
+            int viewW = 900, viewH = 1200; float zoom = 2f;
+            CountDownLatch done = new CountDownLatch(1); AtomicReference<PdfEngine.Frame> detail = new AtomicReference<>();
+            InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> engine.detail(marked, 0, viewW, viewH, zoom, 0, 0, new PdfEngine.Callback() {
+                @Override public void ready(PdfEngine.Frame frame) { detail.set(frame); done.countDown(); }
+                @Override public void failed(String message) { fail(message); }
+            }));
+            assertTrue("Detail render completed", done.await(5, TimeUnit.SECONDS));
+            float fit = Math.min(viewW / 612f, viewH / 792f);
+            android.graphics.Matrix matrix = new android.graphics.Matrix();
+            matrix.setScale(fit, fit); matrix.postTranslate((viewW - 612 * fit) / 2f, (viewH - 792 * fit) / 2f);
+            matrix.postScale(zoom, zoom, viewW / 2f, viewH / 2f);
+            float[] centre = {200, 292}, paper = {400, 292}; matrix.mapPoints(centre); matrix.mapPoints(paper);
+            android.graphics.Bitmap zoomed = detail.get().bitmap();
+            assertRed("Zoomed markup centre", zoomed.getPixel(Math.round(centre[0]), Math.round(centre[1])));
+            assertWhite("Zoomed paper", zoomed.getPixel(Math.round(paper[0]), Math.round(paper[1])));
+        } finally { annotated.delete(); }
+    }
     @Test public void missingFileReportsErrorAndReaderCanRecover() throws Exception {
         CountDownLatch done = new CountDownLatch(1); AtomicReference<String> error = new AtomicReference<>();
         Models.Song missing = new Models.Song("missing", "Missing", "file:///does-not-exist.pdf", null, 1);

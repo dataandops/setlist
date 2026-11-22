@@ -25,6 +25,29 @@ final class TestScores {
         } finally { document.close(); }
         return file;
     }
+    /**
+     * One blank US Letter page carrying a single /Square markup annotation, drawn as a solid red
+     * box over PDF rect [100 400 300 600]. The platform PdfRenderer leaves it out; the reader must show it.
+     */
+    static File annotatedPdf(Context context, String name) throws Exception {
+        String appearance = "1 0 0 rg 0 0 200 200 re f\n";
+        String[] objects = {
+            "<< /Type /Catalog /Pages 2 0 R >>",
+            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Annots [4 0 R] >>",
+            "<< /Type /Annot /Subtype /Square /Rect [100 400 300 600] /F 4 /C [1 0 0] /IC [1 0 0] /AP << /N 5 0 R >> >>",
+            "<< /Type /XObject /Subtype /Form /BBox [0 0 200 200] /Length " + appearance.length() + " >>\nstream\n" + appearance + "endstream",
+        };
+        StringBuilder pdf = new StringBuilder("%PDF-1.7\n"); int[] offsets = new int[objects.length];
+        for (int i = 0; i < objects.length; i++) { offsets[i] = pdf.length(); pdf.append(i + 1).append(" 0 obj\n").append(objects[i]).append("\nendobj\n"); }
+        int xref = pdf.length();
+        pdf.append("xref\n0 ").append(objects.length + 1).append("\n0000000000 65535 f \n");
+        for (int offset : offsets) pdf.append(String.format(java.util.Locale.US, "%010d 00000 n \n", offset));
+        pdf.append("trailer\n<< /Size ").append(objects.length + 1).append(" /Root 1 0 R >>\nstartxref\n").append(xref).append("\n%%EOF\n");
+        File file = new File(context.getCacheDir(), name + ".pdf");
+        try (FileOutputStream output = new FileOutputStream(file)) { output.write(pdf.toString().getBytes(java.nio.charset.StandardCharsets.US_ASCII)); }
+        return file;
+    }
     static File audio(Context context) throws Exception {
         File file = new File(context.getCacheDir(), "test-tone.mp3");
         try (java.io.InputStream input = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().getContext().getAssets().open("test-tone.mp3");
