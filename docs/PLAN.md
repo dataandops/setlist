@@ -22,3 +22,7 @@ PR #1 (foundation) and PR #2 (concert reader) are merged. The next PR contains t
 Material 3 dark-stage system, custom adaptive icon, empty states, responsive reader
 controls, editable artist/key/BPM/notes, saved-song search and setlist filtering,
 and bidirectional PDF swipe navigation. No PRs are automatically merged.
+
+0.0.3 (PR #12) replaces the platform PdfRenderer with PDFium so annotation-app markups
+display. See [validation](VALIDATION.md#003--pdf-markups-2026-11-22) and
+[third-party components](THIRD_PARTY.md).

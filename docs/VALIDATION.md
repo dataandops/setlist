@@ -52,7 +52,8 @@ Raw extracted timings and test totals are in [validation-results.json](validatio
 Full local JUnit reports and per-test logcat files are under
 `app/build/outputs/androidTest-results/connected/debug/` (ignored by Git).
 
-The renderer uses one worker with foreground-request priority, at most two open
+The renderer draws pages with PDFium, including annotations (see the 0.0.3 section
+below). It uses one worker with foreground-request priority, at most two open
 PDF descriptors, and an LRU bitmap budget of the smaller of 48 MiB or one-sixth of
 the app heap. It prepares upcoming pages, the previous page and the next song's
 first page without writing permanent media copies.
@@ -83,3 +84,32 @@ GitHub CI builds the APK, compiles instrumentation tests and runs lint. Emulator
 instrumentation was executed locally; it is not yet part of the hosted CI job.
 
 Follow-up validation: the direct score-menu Home route passed on both emulators. Pagination and combined search/filter recovery tests also passed on both (six focused checks across the two runs), including 31-song page boundaries, page restoration after recreation and reset after query/filter changes. Debug build and lint pass.
+
+## 0.0.3 — PDF markups (2026-11-22)
+
+A user reported that markups made in an annotation app (typed chord names and
+boxes around chords) were missing in 0.0.2. Cause: Android's
+`android.graphics.pdf.PdfRenderer` draws page content only and never draws
+annotations. `PdfEngine` now renders through PDFium (`io.legere:pdfiumandroid`
+1.0.35) with annotation rendering on, for fitted pages and zoom detail
+([#12](https://github.com/dataandops/setlist/pull/12)).
+
+- New `PdfEngineTest.markupAnnotationsAreRendered` builds a PDF with a red `/Square`
+  annotation and checks its pixels in the fitted render and a 2× zoom detail render.
+  It fails with the old renderer.
+- All `PdfEngineTest` and `LibraryTest` cases pass on the Pixel 7 (Android 15) emulator.
+  Worst cold render in the 12-page engine test: 13–28 ms (budget 2 s).
+- Debug and release build and lint pass. Release lint prints warnings about the
+  library's newer Kotlin metadata but reports no issues.
+- The signed release APK installed over 0.0.2 on the phone emulator kept the existing
+  setlist. PDFium's native libraries loaded, and opening a song and turning pages worked.
+- The public v0.0.3 download matches the local SHA-256, and the signing certificate
+  is unchanged.
+- Release APK size: 5.7 MB → 12.9 MB. Native libraries ship for `arm64-v8a`,
+  `armeabi-v7a` and `x86_64`, compressed in the APK.
+
+Not yet verified: the reporting user's own PDF in 0.0.3, and the tablet emulator.
+On the headless phone emulator, `ConcertFlowTest`'s two rotation tests fail the
+same way on unchanged `main` (the display doesn't rotate without a window).
+`tapTogglesFullScreenAndKeepsPage` failed once in a full run, then passed twice
+on its own.
