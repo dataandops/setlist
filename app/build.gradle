@@ -10,6 +10,8 @@ android {
         versionCode 2
         versionName '0.0.2'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        // PDFium ships native code; phones/tablets are ARM, x86_64 covers the emulator and CI.
+        ndk { abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64' }
     }
     buildTypes {
         debug {
@@ -23,11 +25,17 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     lint { abortOnError true }
+    // Compress PDFium's native libraries: a smaller sideload download; they are extracted once at install.
+    packaging { jniLibs { useLegacyPackaging true } }
 }
 
 dependencies {
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
+    // PDFium with annotation rendering: the platform PdfRenderer skips markups (ink, shapes, notes).
+    // 1.0.35 is the newest release that builds against compileSdk 35 (2.x needs 36+).
+    // Guava is only used by the library's coroutine page cache, which Setlist does not use.
+    implementation('io.legere:pdfiumandroid:1.0.35') { exclude group: 'com.google.guava' }
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:rules:1.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'

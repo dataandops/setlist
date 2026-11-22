@@ -54,6 +54,8 @@ On a tablet, the same app gives the score more room:
 - Start on the first score, move through pages, and advance into the next song.
 - Jump to any song from the concert setlist picker; return to editing at any time.
 - Render pages off the main thread, with bounded RAM caching and lookahead.
+- Show your PDF markups (handwriting, boxes, highlights, text notes) exactly as
+  your annotation app saved them, rendered with PDFium.
 - Play, pause and seek MP3s; audio stops when leaving a song or the reader.
 - Keep the screen awake during a set, with optional keyboard/pedal navigation.
 
