@@ -89,7 +89,8 @@ checked into Git. The Gradle wrapper and dependency versions are pinned.
 The app has no Internet permission and no cloud backup. Original files must stay
 available at their selected locations. Local document providers with seekable
 file descriptors are supported; cloud-only/streaming documents should first be
-saved to the device. Unprotected PDFs only. Removing a setlist keeps saved songs
+saved to the device. Unprotected PDFs only. Markups saved in the PDF by annotation
+apps are displayed, but not editable in Setlist. Removing a setlist keeps saved songs
 available for reuse and never deletes source files.
 
 ### Dark stage preview

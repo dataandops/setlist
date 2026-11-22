@@ -28,6 +28,12 @@ back to the person who shared the app.
 4. Hold a song's **≡** handle to drag it into playing order.
 5. Tap a song to open its score. Hold a song for options: rename, attach an MP3, or remove it from the set.
 
+Markups you add in an annotation app show in Setlist: handwriting, typed notes and
+chord names, boxes and highlights. Save the PDF in that app first, so the markups are
+stored in the file Setlist opens. If a markup is still missing, export or "print to
+PDF" from your annotation app with annotations included, then use the song's
+**Locate / replace PDF** option to point to the new file.
+
 Your PDFs and MP3s stay in their original locations. Setlist remembers permission
 to read them and does not make permanent copies. If you move a PDF, use the song's
 **Locate / replace PDF** option. Audio plays only after you press **Play MP3**.
